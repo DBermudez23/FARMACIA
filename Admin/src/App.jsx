@@ -18,7 +18,7 @@ function App() {
     <div>
       <ToastContainer/>
       <Navbar/>
-      <div className='flex items-center'>
+      <div className='flex'>
         <Sidebar/>
         <Routes>
           <Route path='/admin-panel-principal' element={<PanelPrincipal/>} />
@@ -27,7 +27,7 @@ function App() {
           <Route path='/admin-gestion-atributos' element={<GestionAtributos/>} />
           <Route path='/admin-gestion-proveedores' element={<GestionProveedores/>} />
           <Route path='/admin-editar-perfil' element={<MiPerfil/>} />
-          <Route path='/admin-editar-contrasena' element={<Contraseña/>} />
+          <Route path='/admin-editar-contraseña' element={<Contraseña/>} />
           <Route path='/admin-gestion-usuarios' element={<GestionUsuarios/>} />
           <Route path='/admin-panel-ventas' element={<PanelVentas/>} />
           <Route path='/admin-login' element={<Login/>} />

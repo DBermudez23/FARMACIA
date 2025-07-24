@@ -25,7 +25,56 @@ const assetsNav = {
     contraseña,
     gestionUsuarios,
     ventas
-} 
+}
+
+const sideBarBotones = [
+    {
+        icono: panelPrincipal,
+        texto: 'PANEL PRINCIPAL',
+        to: '/admin-panel-principal'
+    },
+    {
+        icono: gestionLotes,
+        texto: 'GESTIÓN LOTES',
+        to: '/admin-gestion-lotes'
+    },
+    {
+        icono: gestionProducto,
+        texto: 'GESTIÓN PRODUCTOS',
+        to: '/admin-gestion-producto'
+    },
+    {
+        icono: gestionAtributos,
+        texto: 'GESTIÓN ATRIBUTOS',
+        to: '/admin-gestion-atributos'
+    },
+    {
+        icono: gestionProveedores,
+        texto: 'GESTIÓN PROVEEDORES',
+        to: '/admin-gestion-proveedores'
+    },
+    {
+        icono: gestionUsuarios,
+        texto: 'GESTIÓN USUARIOS',
+        to: '/admin-gestion-usuarios'
+    },
+    {
+        icono: miPerfil,
+        texto: 'MI PERFIL',
+        to: '/admin-editar-perfil'
+    },
+    {
+        icono: contraseña,
+        texto: 'CONTRASEÑA',
+        to: '/admin-editar-contraseña'
+    },
+    {
+        icono: ventas,
+        texto: 'VENTAS',
+        to: '/admin-panel-ventas'
+    }
+];
 
 
-export {assetsNav};
+
+export { assetsNav, sideBarBotones };
