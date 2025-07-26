@@ -1,6 +1,6 @@
 import BarraBusqueda from "../components/atoms/BarraBusqueda";
 import CartaProducto from "../components/molecules/CartaProducto";
-import TablaMedicamentos from "../components/organism/TablaMedicamentos";
+import TablaMedicamentos from "../components/molecules/TablaMedicamentos";
 import amoxicilina from "../assets/amoxicilinaIMG.png";
 import diclofenaco from "../assets/diclofenacoIMG.png";
 import ibuprofeno from "../assets/ibuprofenoIMG.png";

@@ -8,7 +8,7 @@ import loratadina from "../assets/loratadinaIMG.png";
 import omeprazol from "../assets/omeprazolIMG.png";
 import salbutamol from "../assets/salbutamolIMG.png";
 import metmortfina from "../assets/metmortfinaIMG.png";
-import NuevoLoteForm from "../components/organism/NuevoLoteForm";
+import NuevoLoteForm from "../components/molecules/NuevoLoteForm";
 import añadir from "../assets/añadir.svg";
 
 const lotesVencimiento = [

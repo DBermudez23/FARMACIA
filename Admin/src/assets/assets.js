@@ -13,6 +13,10 @@ import ventas from './ventas.svg';
 //IMPORTAMOS PARA CARTA DE LOTE
 import editarBlanco from './editarBlanco.svg';
 import eliminarBlanco from './eliminarBlanco.svg';
+// IMPORTAMOS IMAGENES PARA ATRIBUTOS
+import laboratorios from './laboratoriosIMG.svg';
+import presentacion from './presentacionIMG.svg';
+import tipo from './tipoMedicamentoIMG.svg';
 
 
 const assetsNav = {
@@ -82,6 +86,12 @@ const assetsLoteInfo = {
     eliminarBlanco
 }
 
+const assetsAtributos = {
+    laboratorios,
+    presentacion,
+    tipo
+}
 
 
-export { assetsNav, sideBarBotones, assetsLoteInfo };
+
+export { assetsNav, sideBarBotones, assetsLoteInfo, assetsAtributos };
