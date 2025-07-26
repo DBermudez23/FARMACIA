@@ -3,13 +3,17 @@ import { createContext, useState } from "react";
 export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
+
+    const moneda = '$';
+
     const [carritoCompras, setCarritoCompras] = useState([]);
     const [productosCarrito, setProductosCarrito] = useState(0);
 
 
     const value = {
         carritoCompras, setCarritoCompras,
-        productosCarrito, setProductosCarrito
+        productosCarrito, setProductosCarrito,
+        moneda
     }
 
     return (

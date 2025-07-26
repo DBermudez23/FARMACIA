@@ -22,7 +22,7 @@ function App() {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
         {/* Contenedor para scroll */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 scroll-smooth">
           <Routes>
             <Route path='/admin-panel-principal' element={<PanelPrincipal />} />
             <Route path='/admin-gestion-lotes' element={<GestionLotes />} />
