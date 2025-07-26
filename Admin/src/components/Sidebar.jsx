@@ -1,6 +1,17 @@
 import { NavLink } from 'react-router-dom';
 import { sideBarBotones } from '../assets/assets.js';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
+function ScrollToTop () {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [pathname]);
+
+  return null;
+}
 
 function Sidebar() {
   return (
@@ -8,6 +19,7 @@ function Sidebar() {
       <ul className="text-[#15D0EF] text-xs font-semibold">
         {sideBarBotones.map((boton, i) => (
           <NavLink
+            onClick={() => ScrollToTop()}
             key={i}
             to={boton.to}
             className={({ isActive }) =>

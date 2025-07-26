@@ -12,29 +12,35 @@ import Contraseña from './pages/Contraseña';
 import GestionUsuarios from './pages/GestionUsuarios';
 import PanelVentas from './pages/PanelVentas';
 import Login from './pages/Login';
+import Facturacion from './pages/Facturacion';
 
 function App() {
   return (
-    <div>
-      <ToastContainer/>
-      <Navbar/>
-      <div className='flex'>
-        <Sidebar/>
-        <Routes>
-          <Route path='/admin-panel-principal' element={<PanelPrincipal/>} />
-          <Route path='/admin-gestion-lotes' element={<GestionLotes/>} />
-          <Route path='/admin-gestion-producto' element={<GestionProducto/>} />
-          <Route path='/admin-gestion-atributos' element={<GestionAtributos/>} />
-          <Route path='/admin-gestion-proveedores' element={<GestionProveedores/>} />
-          <Route path='/admin-editar-perfil' element={<MiPerfil/>} />
-          <Route path='/admin-editar-contraseña' element={<Contraseña/>} />
-          <Route path='/admin-gestion-usuarios' element={<GestionUsuarios/>} />
-          <Route path='/admin-panel-ventas' element={<PanelVentas/>} />
-          <Route path='/admin-login' element={<Login/>} />
-        </Routes>
+    <div className="h-screen flex flex-col">
+      <ToastContainer />
+      <Navbar />
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        {/* Contenedor para scroll */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <Routes>
+            <Route path='/admin-panel-principal' element={<PanelPrincipal />} />
+            <Route path='/admin-gestion-lotes' element={<GestionLotes />} />
+            <Route path='/admin-gestion-producto' element={<GestionProducto />} />
+            <Route path='/admin-gestion-atributos' element={<GestionAtributos />} />
+            <Route path='/admin-gestion-proveedores' element={<GestionProveedores />} />
+            <Route path='/admin-editar-perfil' element={<MiPerfil />} />
+            <Route path='/admin-editar-contraseña' element={<Contraseña />} />
+            <Route path='/admin-gestion-usuarios' element={<GestionUsuarios />} />
+            <Route path='/admin-panel-ventas' element={<PanelVentas />} />
+            <Route path='/admin-facturacion' element={<Facturacion />} />
+            <Route path='/admin-login' element={<Login />} />
+          </Routes>
+        </div>
       </div>
     </div>
-  )
+  );
 }
+
 
 export default App

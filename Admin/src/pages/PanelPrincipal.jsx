@@ -154,7 +154,7 @@ const productos = [
 
 function PanelPrincipal() {
   return (
-    <div className="w-full flex flex-wrap justify-center overflow-y-scroll">
+    <div className="w-full flex flex-wrap justify-center">
       <div className="max-w-6xl w-full px-4 sm:px-8 py-8">
 
         <h2 className="text-sm sm:text-md text-start mb-4">

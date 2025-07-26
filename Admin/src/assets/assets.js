@@ -10,7 +10,9 @@ import miPerfil from './miPerfil.svg';
 import contraseña from './contraseña.svg';
 import gestionUsuarios from './gestionUSR.svg';
 import ventas from './ventas.svg';
-// 
+//IMPORTAMOS PARA CARTA DE LOTE
+import editarBlanco from './editarBlanco.svg';
+import eliminarBlanco from './eliminarBlanco.svg';
 
 
 const assetsNav = {
@@ -75,6 +77,11 @@ const sideBarBotones = [
     }
 ];
 
+const assetsLoteInfo = {
+    editarBlanco,
+    eliminarBlanco
+}
 
 
-export { assetsNav, sideBarBotones };
+
+export { assetsNav, sideBarBotones, assetsLoteInfo };

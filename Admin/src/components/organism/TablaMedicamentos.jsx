@@ -23,7 +23,7 @@ const TablaMedicamentos = ({ medicamentos }) => {
                         const vencimiento = new Date(med.vencimiento);
                         const diasRestantes = (vencimiento - hoy) / (1000 * 60 * 60 * 24);
 
-                        const filaClase = diasRestantes < 30 ? "bg-[#F28B82]" : "bg-[#FDE68A]";
+                        const filaClase = diasRestantes < 60 ? "bg-[#F28B82]" : "bg-[#FDE68A]";
                         const isLast = idx === medicamentos.length - 1;
 
                         return (
