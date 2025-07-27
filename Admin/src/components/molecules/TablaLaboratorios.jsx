@@ -1,6 +1,7 @@
-import React from 'react'
+import BotonEditarMini from "../atoms/BotonEditarMini";
+import BotonEliminarMini from "../atoms/BotonEliminarMini";
 
-function TablaLaboratorios({laboratorios}) {
+function TablaLaboratorios({ laboratorios }) {
     return (
         <div className="overflow-hidden rounded-xl border">
             <table className="min-w-full table-auto">
@@ -11,6 +12,7 @@ function TablaLaboratorios({laboratorios}) {
                         <th className="border-r px-4 py-2">DIRECCIÓN</th>
                         <th className="border-r px-4 py-2">TELÉFONO</th>
                         <th className="border-r px-4 py-2">MAIL</th>
+                        <th className="px-4 py-2 rounded-tr-xl">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,6 +29,12 @@ function TablaLaboratorios({laboratorios}) {
                                 <td className="border-r border-t px-2 py-1">{lab.direccion}</td>
                                 <td className="border-r border-t px-2 py-1">{lab.telefono}</td>
                                 <td className="border-r border-t px-2 py-1">{lab.mail}</td>
+                                <td className="border-t px-2 py-2">
+                                    <div className="flex justify-center items-center gap-2">
+                                        <BotonEditarMini />
+                                        <BotonEliminarMini />
+                                    </div>
+                                </td>
                             </tr>
                         );
                     })}

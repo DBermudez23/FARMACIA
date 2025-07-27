@@ -1,4 +1,5 @@
-import React from 'react'
+import BotonEditarMini from "../atoms/BotonEditarMini";
+import BotonEliminarMini from "../atoms/BotonEliminarMini";
 
 function TablaPresentaciones({ presentaciones }) {
   return (
@@ -10,6 +11,7 @@ function TablaPresentaciones({ presentaciones }) {
                         <th className="border-r px-4 py-2 rounded-tl-xl">CÓDIGO</th>
                         <th className="border-r px-4 py-2 rounded-tl-xl">PRESENTACIÓN</th>
                         <th className="border-r px-4 py-2 rounded-tl-xl">DESCRIPCIÓN</th>
+                        <th className="px-4 py-2 rounded-tr-xl">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -24,7 +26,12 @@ function TablaPresentaciones({ presentaciones }) {
                                 <td className={`border-r border-t px-2 py-1 ${isLast ? 'rounded-bl-xl' : ''}`}>{pres.codigo}</td>
                                 <td className="border-r border-t px-2 py-1">{pres.nombre}</td>
                                 <td className="border-r border-t px-2 py-1">{pres.descripcion}</td>
-                                
+                                <td className="border-t px-2 py-2">
+                                    <div className="flex justify-center items-center gap-2">
+                                        <BotonEditarMini />
+                                        <BotonEliminarMini />
+                                    </div>
+                                </td>
                             </tr>
                         );
                     })}
