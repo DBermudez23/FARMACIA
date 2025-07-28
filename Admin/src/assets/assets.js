@@ -17,6 +17,9 @@ import eliminarBlanco from './eliminarBlanco.svg';
 import laboratorios from './laboratoriosIMG.svg';
 import presentacion from './presentacionIMG.svg';
 import tipo from './tipoMedicamentoIMG.svg';
+//IMPORTAMOS IMAGENES PARA GESTIÓN DE USUARIOS
+import lola from './lolaIMG.png';
+import jhon from './jhonIMG.png';
 
 
 const assetsNav = {
@@ -92,6 +95,23 @@ const assetsAtributos = {
     tipo
 }
 
+const usuarios = [
+    {
+        nombre: 'Lola Martínez',
+        email: 'lola@example.com',
+        imagen: lola,
+        edad: 28,
+        telefono: '123-456-7890',
+        direccion: 'Calle Falsa 123, Ciudad, País'
+    },
+    {
+        nombre: 'Jhon Doe',
+        email: 'jhon@example.com',
+        imagen: jhon,
+        edad: 30,
+        telefono: '987-654-3210',
+        direccion: 'Avenida Siempre Viva 742, Ciudad, País'
+    }
+];
 
-
-export { assetsNav, sideBarBotones, assetsLoteInfo, assetsAtributos };
+export { assetsNav, sideBarBotones, assetsLoteInfo, assetsAtributos, usuarios };
