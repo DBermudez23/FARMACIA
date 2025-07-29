@@ -5,11 +5,11 @@ import { useState } from 'react';
 import perfil from '../assets/perfilIMG.svg';
 
 const usuarioBase = {
-  nombre: 'Daniela López',
-  email: 'daniela@example.com',
+  nombre: 'Daniel Bermudez',
+  email: 'daniel@example.com',
   direccion: 'Calle Falsa 123',
   telefono: '1234567890',
-  sexo: 'femenino',
+  sexo: 'Masculino',
   edad: 30
 };
 

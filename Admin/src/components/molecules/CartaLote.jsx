@@ -3,6 +3,9 @@ import BotonEliminar from "../atoms/BotonEliminar";
 import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import BotonConfirmarTablas from "../atoms/BotonConfirmarTablas";
+import BotonCancelarTablas from "../atoms/BotonCancelarTablas";
+import subir from '../../assets/Upload.svg';
 
 function CartaLote({ infoLote }) {
   const {
@@ -16,10 +19,38 @@ function CartaLote({ infoLote }) {
     vencimiento,
     stock,
     idlote,
-    imagen
+    imagen: imagenInicial // ⚠️ Renombrado aquí para evitar conflicto con useState
   } = infoLote;
 
-  const [isEdit, setIsEdit] = useState(false);  
+  const proveedores = [
+    "Proveedor 1",
+    "Proveedor 2",
+    "Proveedor 3",
+    "Proveedor 4"
+  ]
+
+  const [editar, setEditar] = useState(false);
+  const [imagenActual, setImagenActual] = useState(imagenInicial);
+  const [datosEditados, setDatosEditados] = useState({
+    proveedor,
+    presentacion,
+    laboratorio,
+    precioLote,
+    precioUnidad,
+    idlote,
+    stock,
+    ingreso,
+    vencimiento,
+  });
+
+  const handleChange = (e) => {
+    setDatosEditados({
+      ...datosEditados,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+
 
   const fechaHoy = new Date();
   const fechaVencimiento = new Date(vencimiento);
@@ -56,11 +87,38 @@ function CartaLote({ infoLote }) {
       </div>
 
       {/* Imagen */}
-      <img
-        src={imagen}
-        alt={producto}
-        className="w-28 h-28 object-contain rounded-md"
-      />
+      {editar ? (
+        <label htmlFor="imagen" className="cursor-pointer group relative">
+          <div className="inline-block relative">
+            <img
+              className="w-28 h-28 object-contain rounded-md opacity-75 group-hover:opacity-70 transition"
+              src={imagenActual instanceof File ? URL.createObjectURL(imagenActual) : imagenActual}
+              alt="Vista previa"
+            />
+            <div className="absolute inset-0 flex items-center rounded-md justify-center bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition cursor-pointer">
+              <img src={subir} className="w-8 h-8" alt="Cambiar imagen" />
+            </div>
+          </div>
+          <input
+            type="file"
+            id="imagen"
+            hidden
+            accept="image/*"
+            onChange={(e) => {
+              if (e.target.files[0]) {
+                setImagenActual(e.target.files[0]);
+              }
+            }}
+          />
+        </label>
+      ) : (
+        <img
+          src={imagenInicial}
+          alt={producto}
+          className="w-28 h-28 object-contain rounded-md"
+        />
+      )}
+
 
       {/* Info */}
       <div className="flex flex-col justify-between text-sm w-full">
@@ -68,18 +126,43 @@ function CartaLote({ infoLote }) {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 mt-2">
           <p className="max-w-[200px] truncate">
-            {/*Esto se debe editar en cada componente al hacer uso del backend*/}
-            <span className={`font-semibold ${labelColor}`}>Proveedor:</span> {isEdit ? <input type="text" value={proveedor} className="border border-gray-300 rounded px-2 py-1" /> : proveedor}
+            <span className={`font-semibold ${labelColor}`}>Proveedor:</span>
+            {editar ? (
+              <select name="proveedor" id="proveedor" value={datosEditados.proveedor} onChange={handleChange}>
+                {proveedores.map((prov, idx) => (
+                  <option key={idx} value={prov}>{prov}</option>
+                ))}
+              </select>
+            ) : (
+              proveedor
+            )}
           </p>
+
           <p className="max-w-[200px] truncate">
-            <span className={`font-semibold ${labelColor}`}>Presentación:</span> {presentacion}
+            <span className={`font-semibold ${labelColor}`}>Presentación:</span>
+            {presentacion}
           </p>
+
           <p className="max-w-[200px] truncate">
-            <span className={`font-semibold ${labelColor}`}>Laboratorio:</span> {laboratorio}
+            <span className={`font-semibold ${labelColor}`}>Laboratorio:</span>
+            {laboratorio}
           </p>
-          <p className="max-w-[200px] truncate">
-            <span className={`font-semibold ${labelColor}`}>Precio lote:</span> ${precioLote}
-          </p>
+
+          <div className="max-w-[200px] truncate">
+            <span className={`font-semibold ${labelColor}`}>Precio lote:</span>
+            {editar ? (
+              <input
+                type="number"
+                name="precioLote"
+                value={precioLote}
+                onChange={handleChange}
+                className="border border-black bg-white rounded px-2 py-1 w-full text-sm text-gray-800"
+              />
+            ) : (
+              `$${precioLote}`
+            )}
+          </div>
+
           <p className="max-w-[200px] truncate">
             <span className={`font-semibold ${labelColor}`}>Precio c/u:</span> ${precioUnidad}
           </p>
@@ -99,10 +182,17 @@ function CartaLote({ infoLote }) {
 
 
         {/* Botones */}
-        <div className="flex gap-3 justify-end mt-4">
-          <BotonEditar onClick={() => setIsEdit(!isEdit)} />
-          <BotonEliminar />
-        </div>
+        {editar
+          ? (
+            <div className="flex gap-3 justify-end mt-4">
+              <BotonConfirmarTablas onClick={() => setEditar(false)} />
+              <BotonCancelarTablas onClick={() => setEditar(false)} />
+            </div>
+          ) : <div className="flex gap-3 justify-end mt-4">
+            <BotonEditar onClick={() => setEditar(!editar)} />
+            <BotonEliminar />
+          </div>}
+
       </div>
     </div>
   );

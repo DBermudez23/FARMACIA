@@ -98,7 +98,7 @@ const assetsAtributos = {
 const usuarios = [
     {
         nombre: 'Lola Martínez',
-        email: 'lola@example.com',
+        mail: 'lola@example.com',
         imagen: lola,
         edad: 28,
         telefono: '123-456-7890',
@@ -106,7 +106,7 @@ const usuarios = [
     },
     {
         nombre: 'Jhon Doe',
-        email: 'jhon@example.com',
+        mail: 'jhon@example.com',
         imagen: jhon,
         edad: 30,
         telefono: '987-654-3210',
