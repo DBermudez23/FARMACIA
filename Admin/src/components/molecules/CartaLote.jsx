@@ -79,7 +79,7 @@ function CartaLote({ infoLote }) {
   const labelColor = "text-gray-600";
 
   return (
-    <div className={`relative w-full max-w-3xl h-[200px] ${bgCard} rounded-xl shadow-md p-5 flex gap-6 items-center ${bordeColor}`}>
+    <div className={`relative w-full max-w-3xl min-h-[200px] ${bgCard} rounded-xl shadow-md p-5 flex gap-6 items-center ${bordeColor}`}>
 
       {/* Badge de estado */}
       <div className={`absolute top-0 left-0 rounded-br-xl px-3 py-1 text-xs font-bold ${colorBadge}`}>
@@ -148,7 +148,7 @@ function CartaLote({ infoLote }) {
             {laboratorio}
           </p>
 
-          <div className="max-w-[200px] truncate">
+          <div className="max-w-[200px]">
             <span className={`font-semibold ${labelColor}`}>Precio lote:</span>
             {editar ? (
               <input
@@ -166,18 +166,56 @@ function CartaLote({ infoLote }) {
           <p className="max-w-[200px] truncate">
             <span className={`font-semibold ${labelColor}`}>Precio c/u:</span> ${precioUnidad}
           </p>
+
           <p className="max-w-[200px] truncate">
             <span className={`font-semibold ${labelColor}`}>ID lote:</span> {idlote}
           </p>
-          <p className="max-w-[200px] truncate">
-            <span className={`font-semibold ${labelColor}`}>Stock:</span> {stock}
+
+          <p className="max-w-[200px]">
+            <span className={`font-semibold ${labelColor}`}>Stock:</span>{" "}
+            {editar ? (
+              <input
+                type="number"
+                name="stock"
+                value={datosEditados.stock}
+                onChange={handleChange}
+                className="border border-black bg-white rounded px-2 py-1 w-full text-sm text-gray-800"
+              />
+            ) : (
+              stock
+            )}
           </p>
-          <p className="max-w-[200px] truncate">
-            <span className={`font-semibold ${labelColor}`}>Ingreso:</span> {format(new Date(ingreso), "yyyy-MMM-dd", { locale: es }).toUpperCase()}
+
+          <p className="max-w-[200px]">
+            <span className={`font-semibold ${labelColor}`}>Ingreso:</span>{" "}
+            {editar ? (
+              <input
+                type="date"
+                name="ingreso"
+                value={format(new Date(datosEditados.ingreso), "yyyy-MM-dd")}
+                onChange={handleChange}
+                className="border border-black bg-white rounded px-2 py-1 w-full text-sm text-gray-800"
+              />
+            ) : (
+              format(new Date(ingreso), "yyyy-MMM-dd", { locale: es }).toUpperCase()
+            )}
           </p>
-          <p className="max-w-[200px] truncate">
-            <span className={`font-semibold ${labelColor}`}>Vence:</span> {format(fechaVencimiento, "yyyy-MMM-dd", { locale: es }).toUpperCase()}
+
+          <p className="max-w-[200px]">
+            <span className={`font-semibold ${labelColor}`}>Vence:</span>{" "}
+            {editar ? (
+              <input
+                type="date"
+                name="vencimiento"
+                value={format(new Date(datosEditados.vencimiento), "yyyy-MM-dd")}
+                onChange={handleChange}
+                className="border border-black bg-white rounded px-2 py-1 w-full text-sm text-gray-800"
+              />
+            ) : (
+              format(fechaVencimiento, "yyyy-MMM-dd", { locale: es }).toUpperCase()
+            )}
           </p>
+
         </div>
 
 

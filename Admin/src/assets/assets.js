@@ -20,6 +20,10 @@ import tipo from './tipoMedicamentoIMG.svg';
 //IMPORTAMOS IMAGENES PARA GESTIÓN DE USUARIOS
 import lola from './lolaIMG.png';
 import jhon from './jhonIMG.png';
+//IMPORTAMOS IMAGENES PARA VENTAS
+import ventasDia from './ventasDiariasIMG.svg';
+import ventasSemana from './ventasSemanalesIMG.svg';
+import ventasMes from './ventasMensualesIMG.svg';
 
 
 const assetsNav = {
@@ -114,4 +118,10 @@ const usuarios = [
     }
 ];
 
-export { assetsNav, sideBarBotones, assetsLoteInfo, assetsAtributos, usuarios };
+const assetVentas = {
+    ventasDia,
+    ventasSemana,
+    ventasMes
+}
+
+export { assetsNav, sideBarBotones, assetsLoteInfo, assetsAtributos, usuarios, assetVentas };

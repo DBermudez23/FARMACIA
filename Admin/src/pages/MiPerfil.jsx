@@ -3,6 +3,7 @@ import BotonCancelar from '../components/atoms/BotonCancelar';
 import BotonConfirmar from '../components/atoms/BotonConfirmar';
 import { useState } from 'react';
 import perfil from '../assets/perfilIMG.svg';
+import subir from '../assets/Upload.svg';
 
 const usuarioBase = {
   nombre: 'Daniel Bermudez',
@@ -16,6 +17,7 @@ const usuarioBase = {
 function MiPerfil() {
   const [editarPerfil, setEditarPerfil] = useState(false);
   const [usuario, setUsuario] = useState(usuarioBase);
+  const [imagenActual, setImagenActual] = useState(perfil);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,11 +44,38 @@ function MiPerfil() {
 
         {/* Imagen y formulario */}
         <div className="flex flex-col sm:flex-row gap-8 items-center sm:items-start">
-          <img
-            src={perfil}
-            alt="Perfil"
-            className="w-40 h-40 rounded-full border-4 border-[#15D0EF] object-cover"
-          />
+          {/* Imagen */}
+          {editarPerfil ? (
+            <label htmlFor="imagen" className="cursor-pointer group relative">
+              <div className="inline-block relative">
+                <img
+                  className="w-28 h-28 object-cover rounded-md opacity-75 group-hover:opacity-60 transition"
+                  src={imagenActual instanceof File ? URL.createObjectURL(imagenActual) : imagenActual}
+                  alt="Vista previa"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition rounded-md">
+                  <img src={subir} className="w-8 h-8" alt="Cambiar imagen" />
+                </div>
+              </div>
+              <input
+                type="file"
+                id="imagen"
+                hidden
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files[0]) {
+                    setImagenActual(e.target.files[0]);
+                  }
+                }}
+              />
+            </label>
+          ) : (
+            <img
+              src={imagenActual instanceof File ? URL.createObjectURL(imagenActual) : imagenActual}
+              alt="Perfil"
+              className="w-28 h-28 object-cover rounded-full border-4 border-[#15D0EF]"
+            />
+          )}
 
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 
@@ -148,8 +177,7 @@ function MiPerfil() {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 }
-
 export default MiPerfil;
