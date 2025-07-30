@@ -13,9 +13,14 @@ import GestionUsuarios from './pages/GestionUsuarios';
 import PanelVentas from './pages/PanelVentas';
 import Login from './pages/Login';
 import Facturacion from './pages/Facturacion';
+import { useContext } from 'react';
+import { AdminContext } from './context/AdminContext';
 
 function App() {
-  return (
+
+  const {aToken} = useContext(AdminContext);
+
+  return aToken ? (
     <div className="h-screen flex flex-col">
       <ToastContainer />
       <Navbar />
@@ -34,12 +39,17 @@ function App() {
             <Route path='/admin-gestion-usuarios' element={<GestionUsuarios />} />
             <Route path='/admin-panel-ventas' element={<PanelVentas />} />
             <Route path='/admin-facturacion' element={<Facturacion />} />
-            <Route path='/admin-login' element={<Login />} />
           </Routes>
         </div>
       </div>
     </div>
-  );
+  )
+  : (
+    <>
+      <Login />
+      <ToastContainer />
+    </>
+  )
 }
 
 
