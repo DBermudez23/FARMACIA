@@ -1,17 +1,11 @@
 import BarraBusqueda from "../components/atoms/BarraBusqueda";
 import añadir from "../assets/añadir.svg";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import NuevoProductoForm from "../components/molecules/NuevoProductoForm";
-import diclofenaco from "../assets/diclofenacoIMG.png";
-import ibuprofeno from "../assets/ibuprofenoIMG.png";
-import loratadina from "../assets/loratadinaIMG.png";
-import metmortfina from "../assets/metmortfinaIMG.png";
-import amoxicilina from "../assets/amoxicilinaIMG.png";
-import omeprazol from "../assets/omeprazolIMG.png";
-import salbutamol from "../assets/salbutamolIMG.png";
 import CartaGestionProducto from "../components/molecules/CartaGestionProducto";
+import { AdminContext } from "../context/AdminContext";
 
-const productos = [
+/*const productos = [
   {
     imagen: diclofenaco,
     _id: "1567",
@@ -120,13 +114,24 @@ const productos = [
     precio: "9.50",
     tipo: "COMERCIAL"
   }
-];
+];*/
 
 
 
 function GestionProducto() {
 
   const [nuevoProducto, setNuevoProducto] = useState(false);
+
+  const {
+    aToken,
+    productos, obtenerProductos
+  } = useContext(AdminContext);
+
+  useEffect(() => {
+    if (aToken) {
+      obtenerProductos();
+    }
+  }, [aToken])
 
   return (
     <div className='w-full flex flex-wrap justify-center overflow-y-scroll'>
@@ -146,7 +151,7 @@ function GestionProducto() {
         </div>
 
         {nuevoProducto && (
-          <NuevoProductoForm />
+          <NuevoProductoForm setNuevoProducto={setNuevoProducto}/>
         )}
 
 

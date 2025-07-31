@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 const PresentacionSchema = new mongoose.Schema({
-    nombre: {type:String, required:true, unique:true, trim:true}
+    nombre: {type:String, required:true, unique:true, trim:true},
+    descripcion: {type:String, required:true, trim:true}
 })
 
 const ModeloPresentacion = mongoose.models.presentacion || mongoose.model('presentacion', PresentacionSchema);

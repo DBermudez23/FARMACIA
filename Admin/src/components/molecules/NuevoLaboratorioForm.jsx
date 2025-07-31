@@ -1,10 +1,62 @@
-import React from 'react'
+import { useContext } from "react"
+import { AdminContext } from "../../context/AdminContext"
+import { useState } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+
 
 function NuevoLaboratorioForm() {
+
+  const [nombre, setNombre] = useState('');
+  const [direccion, setDireccion] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [mail, setMail] = useState('');
+
+  const {backendURL, aToken} = useContext(AdminContext);
+
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
+
+    if (!nombre || !direccion || !telefono || !mail) {
+      return toast.error('Todos los campos son obligatorios')
+    }
+
+    const formData = new FormData();
+    formData.append('nombre', nombre);
+    formData.append('direccion', direccion);
+    formData.append('telefono', telefono);
+    formData.append('mail', mail);
+
+    try {
+      const {data} = await axios.post(
+        backendURL + `/api/admin/nuevo-laboratorio`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            aToken
+          }
+        }
+      )
+
+      if (data.success) {
+        toast.success(data.message);
+        setNombre('');
+        setDireccion('');
+        setTelefono('');
+        setTelefono('');
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message || "Error al conectar con el servidor");
+    }
+  }
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-[#15D0EF] mb-4">NUEVO LABORATORIO</h2>
-      <form>
+      <form onSubmit={onSubmitHandler}>
         <div className="mb-4">
           <label htmlFor="nombre" className="block text-sm font-semibold text-gray-700 mb-2">
             Nombre:

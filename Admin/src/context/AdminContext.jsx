@@ -11,6 +11,8 @@ const AdminContextProvider = (props) => {
     const [productos, setProductos] = useState([]);
     const [laboratorios, setLaboratorios] = useState([]);
     const [proveedores, setProveedores] = useState([]);
+    const [presentaciones, setPresentaciones] = useState([]);
+    const [tipos, setTipos] = useState([]);
     const [lotes, setLotes] = useState([]);
     const [ventas, setVentas] = useState([]);
 
@@ -70,6 +72,40 @@ const AdminContextProvider = (props) => {
         }
     }
 
+    //----------------------------------------------------------- GESTIÓN DE PRESENTACIONES-------------------------------------------------------------
+
+    const obtenerPresentaciones = async () => {
+        try {
+            
+            const {data} = await clienteAxios.get('/api/admin/obtener-presentaciones');
+            if (data.success) {
+                setPresentaciones(data.presentaciones);
+            } else {
+                toast.error(data.message);
+            }
+
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
+    //----------------------------------------------------------- GESTIÓN DE TIPOS DE MEDICAMENTO-------------------------------------------------------------
+
+    const obtenerTipos = async () => {
+        try {
+
+            const {data} = await clienteAxios.get('/api/admin/obtener-tipos');
+            if (data.success) {
+                setTipos(data.tipos);
+            } else {
+                toast.error(data.message);
+            }
+            
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
     //----------------------------------------------------------- GESTIÓN DE PROVEEDORES-------------------------------------------------------------
     const obtenerProveedores = async () => {
         try {
@@ -86,6 +122,7 @@ const AdminContextProvider = (props) => {
         }
     }
 
+    //----------------------------------------------------------- GESTIÓN DE VENDEDORES-------------------------------------------------------------
 
     const obtenerVendedores = async () => {
         try {
@@ -105,10 +142,13 @@ const AdminContextProvider = (props) => {
 
     const value = {
         aToken, setAToken,
-        backendURL,
+        backendURL, clienteAxios,
         productos, obtenerProductos, setProductos,eliminarProducto,
         proveedores, obtenerProveedores, setProveedores,
-        laboratorios
+        laboratorios, obtenerLaboratorios, setLaboratorios,
+        vendedores, obtenerVendedores, setVendedores,
+        tipos, obtenerTipos,
+        presentaciones, obtenerPresentaciones
     }
 
     return (
