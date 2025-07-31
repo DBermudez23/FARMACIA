@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 //Middleware para proteger rutas de administrador
-const authAdmin = async (req,res) => {
+const authAdmin = async (req,res, next) => {
     try {
 
         const aToken = req.headers.atoken;

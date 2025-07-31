@@ -1,15 +1,16 @@
 import { useContext, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
+import { AdminContext } from '../../context/AdminContext';
 import BotonEditar from '../atoms/BotonEditar';
 import BotonEliminar from '../atoms/BotonEliminar';
 import BotonConfirmarTablas from '../atoms/BotonConfirmarTablas';
 import BotonCancelarTablas from '../atoms/BotonCancelarTablas';
 
-const laboratorios = [
+/*const laboratorios = [
     { id: 1, nombre: 'Laboratorio A' },
     { id: 2, nombre: 'Laboratorio B' },
     { id: 3, nombre: 'Laboratorio C' },
-]
+] */
 
 const presentaciones = [
     { id: 1, nombre: 'Tabletas' },
@@ -30,7 +31,10 @@ function CartaGestionProducto({ infoProducto }) {
 
 
     const { moneda } = useContext(AppContext);
-
+    const {
+        eliminarProducto,
+        obtenerLaboratorios, laboratorios
+    } = useContext(AdminContext);
 
 
     const handleChange = (e) => {

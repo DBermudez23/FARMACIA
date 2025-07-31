@@ -8,6 +8,9 @@ import loratadina from "../assets/loratadinaIMG.png";
 import omeprazol from "../assets/omeprazolIMG.png";
 import salbutamol from "../assets/salbutamolIMG.png";
 import metmortfina from "../assets/metmortfinaIMG.png";
+import { useContext } from "react";
+import { AdminContext } from "../context/AdminContext";
+import { useEffect } from "react";
 
 const medicamentos = [
   {
@@ -76,83 +79,18 @@ const medicamentos = [
 
 ];
 
-const productos = [
-  {
-    _id: "2345",
-    producto: "AMOXICILINA 500mg",
-    imagen: amoxicilina,
-    cantidad: "100 CAJAS",
-    presentacion: "CAJA X 10 CÁPSULAS",
-    proveedor: "DISTRIFARMA",
-    precio: "3.60"
-  },
-  {
-    _id: "0327",
-    producto: "IBUPROFENO 400mg",
-    imagen: ibuprofeno,
-    cantidad: "100 CAJAS",
-    presentacion: "CAJA X 20 TABLETAS",
-    proveedor: "FARMASUMINISTROS",
-    precio: "1.40"
-  },
-  {
-    _id: "1975",
-    producto: "LORATADINA 10mg",
-    imagen: loratadina,
-    cantidad: "60 CAJAS",
-    presentacion: "CAJA X 10 TABLETAS",
-    proveedor: "DROGUERÍA TOTAL",
-    precio: "7.40"
-  },
-  {
-    _id: "4598",
-    producto: "METFORMINA 850mg",
-    imagen: metmortfina,
-    cantidad: "90 CAJAS",
-    presentacion: "CAJA X 30 TABLETAS",
-    proveedor: "INTERPHARMA",
-    precio: "28.90"
-  },
-  {
-    _id: "7432",
-    producto: "OMEPRAZOL 20mg",
-    imagen: omeprazol,
-    cantidad: "75 CAJAS",
-    presentacion: "CAJA X 14 CÁPSULAS",
-    proveedor: "DISMÉDICA",
-    precio: "5.60"
-  },
-  {
-    _id: "1258",
-    producto: "DICLOFENACO 50mg",
-    imagen: diclofenaco,
-    cantidad: "65 CAJAS",
-    presentacion: "CAJA X 10 TABLETAS",
-    proveedor: "FARMAEXPRESS",
-    precio: "2.40"
-  },
-  {
-    _id: "1785",
-    producto: "SALBUTAMOL 100mcg",
-    imagen: salbutamol,
-    cantidad: "30 UNIDADES",
-    presentacion: "INHALADOR",
-    proveedor: "INSUMOS DEL CAFÉ",
-    precio: "10.00" // No se muestra precio en la imagen
-  },
-  {
-    _id: "9866",
-    producto: "ENALAPRIL 10mg",
-    imagen: amoxicilina,
-    cantidad: "80 CAJAS",
-    presentacion: "CAJA X 20 TABLETAS",
-    proveedor: "MEDIPHARMA LTDA",
-    precio: "3.60"
-  }
-];  
 
 
 function PanelPrincipal() {
+
+  const {aToken, obtenerProductos, productos} = useContext(AdminContext);
+
+  useEffect(() => {
+    if (aToken) {
+      obtenerProductos();
+    }
+  }, [aToken])
+
   return (
     <div className="w-full flex flex-wrap justify-center">
       <div className="max-w-6xl w-full px-4 sm:px-8 py-8">

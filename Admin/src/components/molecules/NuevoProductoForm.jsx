@@ -2,9 +2,29 @@ import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import BotonCancelar from "../atoms/BotonCancelar";
 import BotonConfirmar from "../atoms/BotonConfirmar";
+import { AdminContext } from "../../context/AdminContext";
+import { toast } from "react-toastify";
 
 function NuevoProductoForm() {
   const { moneda } = useContext(AppContext);
+  const {
+    backendURL, aToken,
+    laboratorios,
+
+  } = useContext(AdminContext);
+
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
+
+    try {
+
+
+
+    } catch (error) {
+      toast.error(error.message);
+    }
+
+  }
 
   return (
     <form className="w-full max-w-2xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
@@ -37,8 +57,11 @@ function NuevoProductoForm() {
         <select
           className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF]"
         >
-          <option value="">GENFAR</option>
-          <option value="">MK</option>
+          {laboratorios.map((lab) => (
+            <option key={lab.id} value={lab.nombre}>
+              {lab.nombre}
+            </option>
+          ))}
         </select>
       </div>
 

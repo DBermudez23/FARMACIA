@@ -34,6 +34,8 @@ const loginAdmin = async (req,res) => {
     }
 }
 
+// -------------------------------------- VENDEDORES---------------------------------------------
+
 //API para obtener información de los vendedores GET
 const obtenerVendedores = async (req,res) => {
     try {
@@ -99,18 +101,83 @@ const añadirVendedor = async (req,res) => {
     } catch (error) {
         
         console.log(error);
-        res.json({success:false,message:error.message});
+        res.status(500).json({success:false,message:error.message});
 
     }
 }
 
+//API para eliminar un vendedor
+const eliminarVendedor = async (req,res) => {
+    try {
 
+        //La contraseña del administrador es necesaria para eliminar un vendedor
+        const {contraseña} = req.body;
+        const {id} = req.parms;
+
+        if (contraseña !== process.env.ADMIN_CONTRASENA) {
+            return res.status(403).json({success:false,message:'Contraseña incorrecta'});
+        }
+
+        await ModeloVendedor.findByIdAndDelete(id);
+        res.status(200).json({success:true,message:'Vendedor eliminado exitosamente'});
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.status(500).json({success:false,message:error.message});
+
+    }
+}
+
+//API para editar la información de un vendedor
+const editarVendedor = async (req,res) => {
+    try {
+
+        const {id} = req.params;
+        const {nombre, telefono, direccion, genero} = req.body;
+        const imagen = req.file;
+
+        //Validación de que el vendedor existe en la base de datos
+        const vendedor = await ModeloVendedor.findById(id);
+        if (!vendedor) {
+            return res.status(404).json({success:false,message:'Vendedor no encontrado'});
+        }
+
+        //Validamos si hay una nueva imagen, en caso de que la haya la subimos a cloudinary
+        let nuevaImagenURL = vendedor.imagen;
+        if (imagen) {
+            const subirImagen = await cloudinary.uploader.upload(imagen.path);
+            nuevaImagenURL = subirImagen.secure_url;
+        }
+
+        //Actualizamos los campos
+        vendedor.nombre = nombre || vendedor.nombre;
+        vendedor.telefono = telefono || vendedor.telefono;
+        vendedor.direccion = direccion || vendedor.direccion;
+        vendedor.genero = genero || vendedor.genero;
+        vendedor.imagen = nuevaImagenURL;
+
+        await vendedor.save();
+
+        res.status(200).json({success:true,message:'Información del vendedor actualizada'});
+
+        
+    } catch (error) {
+
+        console.log(error);
+        res.status(500).json({success:false,message:error.message});
+        
+    }
+}
+
+
+// -------------------------------------- PRODUCTOS---------------------------------------------
 //API para obtener todos los productos GET
 const obtenerProductos = async (req,res) => {
     try {
 
         const productos = await ModeloProducto.find({})
-        return res.json({success:true,productos});
+        return res.status(200).json({success:true,productos});
         
     } catch (error) {
         
@@ -177,5 +244,195 @@ const nuevoProducto = async (req,res) => {
     }
 }
 
+//API para eliminar un producto
+const eliminarProducto = async (req,res) => {
+    try {
 
-export {loginAdmin, añadirVendedor, obtenerVendedores, obtenerProductos, nuevoProducto};
+        //Para eliminar un producto es necesaria la contraseña de el administrador
+        const {contraseña} = req.body;
+        const {id} = req.params;
+
+        if (contraseña !==  process.env.ADMIN_CONTRASENA) {
+            return res.status(403).json({success:false,message:'Contraseña incorrecta'});
+        }
+
+        await ModeloProducto.findByIdAndDelete(id);
+        res.status(200).json({success:true,message:'El producto fue eliminado exitosamente'});
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.status(500).json({success:false,message:error.message});
+
+    }
+}
+
+
+// --------------------------------------LABORATORIOS---------------------------------------------
+//API para obtener todos los laboratorios 
+const obtenerLaboratorios = async (req,res) => {
+    try {
+
+        const laboratorios = await ModeloLaboratorio.find({});
+        res.status(200).json({success:true, laboratorios});
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.status(500).json({success:false,message:error.message});
+
+    }
+}
+
+//API para añadir un nuevo laboratorio
+const nuevoLaboratorio = async (req,res) => {
+    try {
+
+        const {nombre, direccion, telefono, mail} = req.body;
+
+        if (!nombre || !direccion || !telefono || !mail) {
+            return res.status(400).json({success:false,message:'Todos los campos deben estar completos'});
+        }
+
+        //Validamos si existen más laboratorios con el mismo nombre o mail
+        const yaExiste = await ModeloLaboratorio.findOne({ nombre });
+        if (yaExiste) {
+            return res.status(409).json({success:false,message:'Este laboratorio ya existe'});
+        }
+
+        const laboratorioDatos = {
+            nombre,
+            direccion,
+            telefono,
+            mail
+        };
+
+        const nuevoLaboratorio = new ModeloLaboratorio(laboratorioDatos);
+        await nuevoLaboratorio.save();
+
+        res.status(201).json({success:true,message:'Nuevo laboratorio añadido'});
+        
+    } catch (error) {
+
+        console.log(error);
+        res.status(500).json({success:false,message:error.message});
+        
+    }
+}
+
+//API para eliminar laboratorio
+const eliminarLaboratorio = async (req,res) => {
+    try {
+
+        //Para eliminar un laboratorio es necesaria la contraseña del administrador
+        const {contraseña} = req.body;
+        const {id} = req.params;
+
+        if (contraseña !== process.env.ADMIN_CONTRASENA) {
+            return res.status(403).json({success:false,message:'Contraseña incorrecta'});
+        }
+
+        await ModeloLaboratorio.findByIdAndDelete(id);
+        res.json({success:true,message:'Laboratorio eliminado correctamente'});
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.status(500).json({success:false,message:error.message});
+
+    }
+}
+
+
+// --------------------------------------PROVEEDORES---------------------------------------------
+//API para obtener proveedores
+const obtenerProveedores = async (req,res) => {
+    try {
+
+        const proveedores = await ModeloProveedor.find({});
+        res.status(200).json({success:true,proveedores});
+        
+    } catch (error) {
+
+        console.log(error);
+        res.status(500).json({success:false,message:error.message});
+        
+    }
+}
+
+//API para añadir un nuevo proveedor
+const nuevoProveedor = async (req,res) => {
+    try {
+
+        const {nombre, direccion, telefono, mail} = req.body;
+
+        if (!nombre || !direccion || !telefono || !mail){
+            return res.status(400).json({success:false,message:'Todos los campos deben estar completos'});
+        }
+
+        const yaExiste = await ModeloProveedor.findOne({ nombre });
+        if (yaExiste) {
+            return res.status(409).json({success:false,message:'El proveedor ya existe'});
+        }
+
+        const proveedorDatos = {
+            nombre,
+            direccion,
+            telefono,
+            mail
+        }
+
+        const nuevoProveedor = new ModeloProveedor(proveedorDatos);
+        await nuevoProveedor.save();
+
+        res.status(201).json({success:true,message:'Nuevo proveedor añadido'});
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.status(500).json({success:false,message:error.message});
+
+    }
+}
+
+//API para eliminar un proveedor
+const eliminarProveedor = async (req,res) => {
+    try {
+
+        //Para eliminar un proveedor es necesaria la contraseña del administrador
+        const {contraseña} = req.body;
+        const {id} = req.params;
+
+        if (contraseña !== process.env.ADMIN_CONTRASENA) {
+            return res.status(403).json({success:false,message:'Contraseña invalida'});
+        }
+
+        await ModeloProveedor.findByIdAndDelete(id);
+        res.status(200).json({success:true,message:'Proveedor eliminado con exito'});
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.status(500).json({success:false,message:error.message});
+
+    }
+}
+
+
+// --------------------------------------LOTES---------------------------------------------
+
+
+
+// --------------------------------------TIPOS DE MEDICAMENTO---------------------------------------------
+
+
+
+// -------------------------------------- VENTAS---------------------------------------------
+
+export {
+    loginAdmin,
+    añadirVendedor, obtenerVendedores, eliminarVendedor, editarVendedor,
+    obtenerProductos, nuevoProducto, eliminarProducto,
+    obtenerLaboratorios, nuevoLaboratorio, eliminarLaboratorio,
+    obtenerProveedores, nuevoProveedor, eliminarProveedor
+};
