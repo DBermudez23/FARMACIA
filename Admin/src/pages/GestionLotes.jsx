@@ -10,6 +10,9 @@ import salbutamol from "../assets/salbutamolIMG.png";
 import metmortfina from "../assets/metmortfinaIMG.png";
 import NuevoLoteForm from "../components/molecules/NuevoLoteForm";
 import añadir from "../assets/añadir.svg";
+import { useContext } from "react";
+import { AdminContext } from "../context/AdminContext";
+import { useEffect } from "react";
 
 const lotesVencimiento = [
   // ❌ YA VENCIDOS (antes del 2025-07-24)
@@ -120,7 +123,7 @@ const lotesVencimiento = [
   },
 ];
 
-const lotes = [
+/*const lotes = [
   {
     imagen: omeprazol,
     idlote: "1564",
@@ -225,17 +228,25 @@ const lotes = [
     vencimiento: "2025-11-20",
     stock: 100
   }
-];
+]; */
 
 
 
 function GestionLotes() {
+
+  const {lotes, obtenerLotes, aToken} = useContext(AdminContext);
 
   const [lotesRiesgo, setLotesRiesgo] = useState(false);
   const [verTodo, setVerTodo] = useState(false);
   const [nuevoLote, setNuevoLote] = useState(false);
 
   const lotesMostrados = verTodo ? lotesVencimiento : lotesVencimiento.slice(0, 2);
+
+  useEffect(() => {
+    if (aToken) {
+      obtenerLotes();
+    }
+  }, [aToken])
 
   return (
     <div className='w-full flex flex-wrap justify-center'>
@@ -292,7 +303,7 @@ function GestionLotes() {
         </div>
 
         {nuevoLote && (
-          <NuevoLoteForm />
+          <NuevoLoteForm setNuevoLote={setNuevoLote}/>
         )}
 
         {/* Cartas de lotes sin vencer */}

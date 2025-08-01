@@ -5,8 +5,9 @@ const LoteSchema = new mongoose.Schema({
     proveedor: {type:mongoose.Schema.Types.ObjectId, ref:'proveedor', required:true},
     precio: {type:Number, required:true, min: 0},
     cantidad: {type:Number, required:true, min:0},
-    fechaLLegada: {type:Date, required:true},
-    fechaVencimiento: {type:Date, required:true}
+    fechaLlegada: {type:Date, required:true},
+    fechaVencimiento: {type:Date, required:true},
+    infoAdicional: {type:String}
 }, {timestamps:true})
 
 const ModeloLote = mongoose.models.lote || mongoose.model('lote', LoteSchema);

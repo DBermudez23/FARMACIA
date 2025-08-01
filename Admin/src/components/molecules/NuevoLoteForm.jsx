@@ -2,9 +2,68 @@ import BotonCancelar from "../atoms/BotonCancelar";
 import BotonConfirmar from "../atoms/BotonConfirmar";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
+import { AdminContext } from "../../context/AdminContext";
+import { toast } from "react-toastify";
+import { useState } from "react";
 
-function NuevoLoteForm() {
+function NuevoLoteForm({ setNuevoLote }) {
     const { moneda } = useContext(AppContext);
+    const { backendURL, productos, proveedores, aToken } = useContext(AdminContext);
+
+    const [producto, setProducto] = useState('');
+    const [proveedor, setProveedor] = useState('');
+    const [cantidad, setCantidad] = useState('');
+    const [fechaLlegada, setFechaLlegada] = useState('');
+    const [fechaVencimiento, setFechaVencimiento] = useState('');
+    const [precio, setPrecio] = useState('');
+    const [infoAdicional, setInfoAdicional] = useState('');
+
+    const onSubmitHandler = async (event) => {
+        event.preventDefault();
+
+        if (!producto || !proveedor || !cantidad || !fechaIngreso || !fechaVencimiento || !precio) {
+            return toast.error('Todos los campos son obligatorios');
+        }
+
+        const formData = new FormData();
+        formData.append('producto', producto);
+        formData.append('proveedor', proveedor);
+        formData.append('cantidad', cantidad);
+        formData.append('fechaLlegada', fechaLlegada);
+        formData.append('fechaVencimiento', fechaVencimiento);
+        formData.append('precio', precio);
+        infoAdicional && formData.append('infoAdicional', infoAdicional);
+
+        try {
+
+            const { data } = await axios.post(
+                backendURL + '/api/admin/nuevo-lote',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        aToken
+                    }
+                }
+            );
+
+            if (data.succes) {
+                toast.success(data.message);
+                setProducto('');
+                setProveedor('');
+                setCantidad('');
+                setFechaLlegada('');
+                setFechaVencimiento('');
+                setPrecio('');
+                setInfoAdicional('');
+            } else {
+                toast.error(data.message);
+            }
+
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
 
     return (
         <form className="w-full max-w-2xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6 mb-12">
@@ -19,8 +78,9 @@ function NuevoLoteForm() {
                 <select
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF]"
                 >
-                    <option value="">AMOXICILINA 500mg</option>
-                    <option value="">GENOPRAZOL</option>
+                    {productos.map((prod) => (
+                        <option key={prod._id} value={prod._id}>{prod.nombre}</option>
+                    ))}
                 </select>
             </div>
 
@@ -30,8 +90,9 @@ function NuevoLoteForm() {
                 <select
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF]"
                 >
-                    <option value="">SALUD Y VIDA</option>
-                    <option value="">BAYER</option>
+                    {proveedores.map((prov) => (
+                        <option key={prov._id} value={prov._id}>{prov.nombre}</option>
+                    ))}
                 </select>
             </div>
 
@@ -39,7 +100,9 @@ function NuevoLoteForm() {
             <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">CANTIDAD</label>
                 <input
+                    onChange={(e) => setCantidad(e.target.value)}
                     type="number"
+                    value={cantidad}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF]"
                 />
             </div>
@@ -49,7 +112,9 @@ function NuevoLoteForm() {
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                     FECHA DE INGRESO</label>
                 <input
-                    type="text"
+                    onChange={(e) => setFechaLlegada(e.target.value)}
+                    type="date"
+                    value={fechaLlegada}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF]"
                 />
                 <span className="text-gray-400 font-semibold">FORMATO: 01-ENE-2000</span>
@@ -60,7 +125,9 @@ function NuevoLoteForm() {
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                     FECHA DE VENCIMIENTO</label>
                 <input
-                    type="text"
+                    onChange={(e) => setFechaVencimiento(e.target.value)}
+                    type="date"
+                    value={fechaVencimiento}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF]"
                 />
                 <span className="text-gray-400 font-semibold">FORMATO: 01-ENE-2000</span>
@@ -71,7 +138,9 @@ function NuevoLoteForm() {
                 <label className="block text-sm font-semibold text-gray-700 mb-1">COSTO LOTE</label>
                 <div className="flex items-center gap-2">
                     <input
+                        onChange={(e) => setPrecio(e.target.value)}
                         type="text"
+                        value={precio}
                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF]"
                     />
                     <span className="text-gray-700 font-semibold">{moneda}</span>
@@ -82,14 +151,16 @@ function NuevoLoteForm() {
             <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">INFORMACIÓN ADICIONAL</label>
                 <textarea
+                    value={infoAdicional}
+                    onChange={(e) => setInfoAdicional(e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-[#15D0EF]"
                 />
             </div>
 
             {/* Botones */}
             <div className="flex justify-center gap-10 pt-4">
-                <BotonCancelar />
-                <BotonConfirmar />
+                <BotonCancelar onClick={() => setNuevoLote(false)} />
+                <BotonConfirmar type='submit'/>
             </div>
 
         </form>

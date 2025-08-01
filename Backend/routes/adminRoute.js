@@ -6,7 +6,8 @@ import {
     obtenerProveedores, nuevoProveedor, eliminarProveedor, editarProveedor,
     obtenerLaboratorios,nuevoLaboratorio, eliminarLaboratorio,editarLaboratorio,
     obtenerTipos,
-    obtenerPresentaciones
+    obtenerPresentaciones,
+    obtenerLotes, nuevoLote
 } from '../controllers/AdminController.js';
 import upload from '../middlewares/multer.js';
 import authAdmin from '../middlewares/authAdmin.js';
@@ -39,5 +40,8 @@ adminRouter.get('/obtener-proveedores', authAdmin, obtenerProveedores);
 adminRouter.post('/nuevo-proveedor', authAdmin, nuevoProveedor);
 adminRouter.delete('/eliminar-proveedor/:id', authAdmin, eliminarProveedor);
 adminRouter.put('/editar-proveedor/:id', authAdmin, editarProveedor);
+//Lotes
+adminRouter.get('/obtener-lotes', authAdmin, obtenerLotes);
+adminRouter.post('/nuevo-lote', authAdmin, nuevoLote);
 
 export default adminRouter;

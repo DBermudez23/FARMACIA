@@ -525,8 +525,72 @@ const editarProveedor = async (req, res) => {
 
 // --------------------------------------LOTES---------------------------------------------
 
+//API para obtener todos los lotes de la base de datos
+const obtenerLotes = async (req,res) => {
+    try {
 
+        const lotes = await ModeloLote.find({});
+        res.status(200).json({success:true,lotes});
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
 
+    }
+}
+
+//API para añadir un nuevo lote
+const nuevoLote = async (req,res) => {
+    try {
+
+        const {producto, proveedor, precio, cantidad, fechaLlegada, fechaVencimiento, infoAdicional} = req.body;
+
+        if (!producto || !proveedor || !precio || !cantidad || !fechaLlegada || !fechaVencimiento) {
+            return res.status(400).json({success:false,message:'Todos los campos deben estar completos'});
+        }
+
+        //Validamos los ID's de referencia
+        const ids = {producto, proveedor};
+        for (const id in ids) {
+            if (!mongoose.Types.ObjectId.isValid(ids[id])) {
+                return res.status(400).json({success:false,message:`El ID de ${id} es invalido`});
+            }
+        }
+
+        //Con los id correctos pasamos a validar la existencia de dichos documentos
+        const [productoDoc, proveedorDoc] = await Promise.all([
+            ModeloProducto.findById(producto),
+            ModeloProveedor.findById(proveedor)
+        ]);
+
+        if (!productoDoc || !proveedorDoc) {
+            return res.status(400).json({success:false,message:'El producto o proveedor asociado no existe'});
+        }
+
+        const loteDatos = {
+            producto,
+            proveedor,
+            precio,
+            cantidad,
+            fechaLlegada,
+            fechaVencimiento,
+            infoAdicional
+        }
+
+        const nuevoLote = new ModeloLote(loteDatos);
+        await nuevoLote.save();
+
+        res.status(201).json({success:true,message:'Nuevo lote creado'});
+
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
+
+    }
+}
 
 // --------------------------------------TIPOS DE MEDICAMENTO---------------------------------------------
 
@@ -611,6 +675,7 @@ export {
     loginAdmin,
     añadirVendedor, obtenerVendedores, eliminarVendedor, editarVendedor,
     obtenerProductos, nuevoProducto, eliminarProducto, editarProducto,
+    obtenerLotes, nuevoLote,
     obtenerLaboratorios, nuevoLaboratorio, eliminarLaboratorio, editarLaboratorio,
     obtenerTipos,
     obtenerPresentaciones, nuevaPresentacion,

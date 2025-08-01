@@ -56,6 +56,22 @@ const AdminContextProvider = (props) => {
         }
     }
 
+    //----------------------------------------------------------- GESTIÓN DE LOTES-------------------------------------------------------------
+
+    const obtenerLotes = async () => {
+        try {
+
+            const {data} = await clienteAxios.get('/api/admin/obtener-lotes');
+            if (data.success) {
+                toast.success(data.message);
+                setLotes(data.lotes)
+            }
+            
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
     //----------------------------------------------------------- GESTIÓN DE LABORATORIOS-------------------------------------------------------------
     const obtenerLaboratorios = async () => {
         try {
@@ -148,7 +164,8 @@ const AdminContextProvider = (props) => {
         laboratorios, obtenerLaboratorios, setLaboratorios,
         vendedores, obtenerVendedores, setVendedores,
         tipos, obtenerTipos,
-        presentaciones, obtenerPresentaciones
+        presentaciones, obtenerPresentaciones,
+        lotes, obtenerLotes
     }
 
     return (
