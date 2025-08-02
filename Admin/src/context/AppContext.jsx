@@ -1,18 +1,27 @@
 import { createContext, useState } from "react";
+import axios from "axios";
+import { useContext } from "react";
+import { AdminContext } from "./AdminContext";
 
 export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
 
+    const {aToken} = useContext(AdminContext);
     const moneda = '$';
 
     const [carritoCompras, setCarritoCompras] = useState([]);
-    const [productosCarrito, setProductosCarrito] = useState(0);
+
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
+
+    const clienteAxios = axios.create({
+        baseURL: backendURL,
+        headers: { aToken }
+    });
 
 
     const value = {
         carritoCompras, setCarritoCompras,
-        productosCarrito, setProductosCarrito,
         moneda
     }
 

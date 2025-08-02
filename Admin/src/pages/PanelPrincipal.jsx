@@ -1,16 +1,10 @@
 import BarraBusqueda from "../components/atoms/BarraBusqueda";
 import CartaProducto from "../components/molecules/CartaProducto";
 import TablaMedicamentos from "../components/molecules/TablaMedicamentos";
-import amoxicilina from "../assets/amoxicilinaIMG.png";
-import diclofenaco from "../assets/diclofenacoIMG.png";
-import ibuprofeno from "../assets/ibuprofenoIMG.png";
-import loratadina from "../assets/loratadinaIMG.png";
-import omeprazol from "../assets/omeprazolIMG.png";
-import salbutamol from "../assets/salbutamolIMG.png";
-import metmortfina from "../assets/metmortfinaIMG.png";
 import { useContext } from "react";
 import { AdminContext } from "../context/AdminContext";
 import { useEffect } from "react";
+
 
 const medicamentos = [
   {
@@ -77,7 +71,7 @@ const medicamentos = [
     vencimiento: "2025-09-12",
   }
 
-];
+]; 
 
 
 

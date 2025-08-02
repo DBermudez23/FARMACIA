@@ -5,9 +5,10 @@ import {
     obtenerProductos, nuevoProducto,eliminarProducto, editarProducto,
     obtenerProveedores, nuevoProveedor, eliminarProveedor, editarProveedor,
     obtenerLaboratorios,nuevoLaboratorio, eliminarLaboratorio,editarLaboratorio,
-    obtenerTipos,
-    obtenerPresentaciones,
-    obtenerLotes, nuevoLote
+    obtenerTipos, nuevoTipo,
+    obtenerPresentaciones,nuevaPresentacion, eliminarPresentacion, editarPresentacion,
+    obtenerLotes, nuevoLote, eliminarLote, editarLote,
+    nuevaVenta
 } from '../controllers/AdminController.js';
 import upload from '../middlewares/multer.js';
 import authAdmin from '../middlewares/authAdmin.js';
@@ -33,8 +34,12 @@ adminRouter.delete('/eliminar-laboratorio/:id', authAdmin, eliminarLaboratorio);
 adminRouter.put('/editar-laboratorio/:id', authAdmin, editarLaboratorio);
 //Tipos de medicamento
 adminRouter.get('/obtener-tipos', authAdmin, obtenerTipos);
+adminRouter.post('/nuevo-tipo', authAdmin, nuevoTipo);
 //Presentaciones
 adminRouter.get('/obtener-presentaciones', authAdmin, obtenerPresentaciones);
+adminRouter.post('/nueva-presentacion', authAdmin, nuevaPresentacion);
+adminRouter.delete('/eliminar-presentacion/:id', authAdmin, eliminarPresentacion);
+adminRouter.put('/editar-presentacion/:id', authAdmin, eliminarPresentacion);
 //Proveedores
 adminRouter.get('/obtener-proveedores', authAdmin, obtenerProveedores);
 adminRouter.post('/nuevo-proveedor', authAdmin, nuevoProveedor);
@@ -43,5 +48,7 @@ adminRouter.put('/editar-proveedor/:id', authAdmin, editarProveedor);
 //Lotes
 adminRouter.get('/obtener-lotes', authAdmin, obtenerLotes);
 adminRouter.post('/nuevo-lote', authAdmin, nuevoLote);
+adminRouter.delete('/eliminar-lote/:id', authAdmin, eliminarLote);
+adminRouter.put('/editar-lote/:id', authAdmin, editarLote);
 
 export default adminRouter;

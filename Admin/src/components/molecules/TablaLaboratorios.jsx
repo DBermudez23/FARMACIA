@@ -3,20 +3,92 @@ import BotonEditarMini from "../atoms/BotonEditarMini";
 import BotonEliminarMini from "../atoms/BotonEliminarMini";
 import BotonConfirmarTablas from "../atoms/BotonConfirmarTablas";
 import BotonCancelarTablas from "../atoms/BotonCancelarTablas";
+import { useContext } from "react";
+import { AdminContext } from "../../context/AdminContext";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import ModalEliminar from "./ModalEliminar";
 
-function TablaLaboratorios({ laboratorios }) {
+function TablaLaboratorios() {
   const [filaEditando, setFilaEditando] = useState(null);
   const [valoresEditados, setValoresEditados] = useState({});
+
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [laboratorioSeleccionado, setLaboratorioSeleccionado] = useState(null);
+
+  const { laboratorios, obtenerLaboratorios, aToken, backendURL } = useContext(AdminContext);
+
+  useEffect(() => {
+    if (aToken) {
+      obtenerLaboratorios();
+    }
+  }, [aToken])
 
   const handleEditar = (idx, lab) => {
     setFilaEditando(idx);
     setValoresEditados({ ...lab });
   };
 
+
   const handleCancelar = () => {
     setFilaEditando(null);
     setValoresEditados({});
   };
+
+  const handleConfirmar = async (lab) => {
+    try {
+      const { data } = await axios.put(
+        backendURL + `/api/admin/editar-laboratorio/${lab._id}`,
+        valoresEditados,
+        { headers: { aToken } }
+      );
+
+      if (data.success) {
+        toast.success("Laboratorio editado correctamente");
+        setFilaEditando(null);
+        setValoresEditados({});
+        obtenerLaboratorios();
+      } else {
+        toast.error(data.message || "Error al editar");
+      }
+    } catch (error) {
+      toast.error(error.message || "Error en la petición");
+    }
+  };
+
+  //Al hacer click en eliminar se mostrará la modal que solicitara la contraseña del administrador
+  const handleEliminarClick = (lab) => {
+    setLaboratorioSeleccionado(lab);
+    setMostrarModal(true);
+  };
+
+  //Función que se ejecutara al introducir la contraseña en la modal
+  const eliminarLaboratorio = async (contraseñaAdmin) => {
+    try {
+      const { data } = await axios.delete(
+        `${backendURL}/api/admin/eliminar-laboratorio/${laboratorioSeleccionado._id}`,
+        {
+          headers: { aToken },
+          data: { contraseña: contraseñaAdmin }
+        }
+      );
+
+      if (data.success) {
+        obtenerLaboratorios();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      toast.success('Laboratorio eliminado correctamente');
+      setMostrarModal(false);
+      setLaboratorioSeleccionado(null);
+    }
+  };
+
+
 
   const handleInputChange = (e) => {
     setValoresEditados({
@@ -46,7 +118,7 @@ function TablaLaboratorios({ laboratorios }) {
             return (
               <tr key={idx} className="bg-gray-300 text-center text-sm">
                 <td className={`border-r border-t px-2 py-1 ${isLast ? "rounded-bl-xl" : ""}`}>
-                  {lab.codigo}
+                  {lab._id.slice(0, 4)}
                 </td>
 
                 <td className="border-r border-t px-2 py-1">
@@ -108,13 +180,13 @@ function TablaLaboratorios({ laboratorios }) {
                 <td className="border-t px-2 py-2">
                   {isEditing ? (
                     <div className="flex justify-center items-center gap-2">
-                      <BotonConfirmarTablas onClick={() => setFilaEditando(null)} />
+                      <BotonConfirmarTablas onClick={() => handleConfirmar(lab)} />
                       <BotonCancelarTablas onClick={handleCancelar} />
                     </div>
                   ) : (
                     <div className="flex justify-center items-center gap-2">
                       <BotonEditarMini onClick={() => handleEditar(idx, lab)} />
-                      <BotonEliminarMini />
+                      <BotonEliminarMini onClick={() => handleEliminarClick(lab)} />
                     </div>
                   )}
                 </td>
@@ -123,6 +195,14 @@ function TablaLaboratorios({ laboratorios }) {
           })}
         </tbody>
       </table>
+
+      <ModalEliminar
+        visible={mostrarModal}
+        onClose={() => setMostrarModal(false)}
+        onConfirm={eliminarLaboratorio}
+        nombreElemento={laboratorioSeleccionado?.nombre || "este laboratorio"}
+      />
+
     </div>
   );
 }

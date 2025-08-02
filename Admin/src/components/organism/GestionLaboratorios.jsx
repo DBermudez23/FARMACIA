@@ -2,10 +2,21 @@ import { useState } from 'react'
 import TablaLaboratorios from '../molecules/TablaLaboratorios'
 import añadir from '../../assets/añadir.svg';
 import NuevoLaboratorioForm from '../molecules/NuevoLaboratorioForm';
+import { useEffect } from 'react';
+import { useContext } from 'react';
+import { AdminContext } from '../../context/AdminContext';
 
-function GestionLaboratorios({ laboratorios }) {
+function GestionLaboratorios() {
 
     const [nuevoLaboratorio, setNuevoLaboratorio] = useState(false);
+
+    const {laboratorios, obtenerLaboratorios, aToken} = useContext(AdminContext);
+
+    useEffect(() => {
+        if (aToken) {
+            obtenerLaboratorios();
+        }
+    })
 
     return (
         <div className="w-full px-4 sm:px-8 py-8">

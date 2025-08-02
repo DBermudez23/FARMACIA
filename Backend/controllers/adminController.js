@@ -369,7 +369,8 @@ const eliminarLaboratorio = async (req, res) => {
     try {
 
         //Para eliminar un laboratorio es necesaria la contraseña del administrador
-        const { contraseña } = req.body;
+        const contraseña  = req.body.contraseña;
+        console.log(contraseña)
         const { id } = req.params;
 
         if (contraseña !== process.env.ADMIN_CONTRASENA) {
@@ -377,7 +378,7 @@ const eliminarLaboratorio = async (req, res) => {
         }
 
         await ModeloLaboratorio.findByIdAndDelete(id);
-        res.json({ success: true, message: 'Laboratorio eliminado correctamente' });
+        res.status(204).json({ success: true, message: 'Laboratorio eliminado correctamente' });
 
     } catch (error) {
 
@@ -544,7 +545,7 @@ const obtenerLotes = async (req,res) => {
 const nuevoLote = async (req,res) => {
     try {
 
-        const {producto, proveedor, precio, cantidad, fechaLlegada, fechaVencimiento, infoAdicional} = req.body;
+        const {producto, proveedor, precio, cantidad, fechaLlegada, fechaVencimiento} = req.body;
 
         if (!producto || !proveedor || !precio || !cantidad || !fechaLlegada || !fechaVencimiento) {
             return res.status(400).json({success:false,message:'Todos los campos deben estar completos'});
@@ -574,8 +575,7 @@ const nuevoLote = async (req,res) => {
             precio,
             cantidad,
             fechaLlegada,
-            fechaVencimiento,
-            infoAdicional
+            fechaVencimiento
         }
 
         const nuevoLote = new ModeloLote(loteDatos);
@@ -583,6 +583,61 @@ const nuevoLote = async (req,res) => {
 
         res.status(201).json({success:true,message:'Nuevo lote creado'});
 
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
+
+    }
+}
+
+//API para eliminar lote
+const eliminarLote = async (req,res) => {
+    try {
+
+        //Para eliminar un lote es necesaria la contraseña del administrador
+        const {contraseña} = req.body;
+        const {id} = req.parms;
+
+        if (contraseña !== process.env.ADMIN_CONTRASENA) {
+            return res.status(403).json({success:false,message:'Contraseña incorrecta'});
+        }
+
+        await ModeloLote.findByIdAndDelete(id);
+        res.status(204).json({success:true,message:'Lote eliminado exitosamente'});
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
+
+    }
+}
+
+//API para editar lote
+const editarLote = async (req,res) => {
+    try {
+
+        const {id} = req.params;
+        //Unicamente se podran editar estos campos
+        const {proveedor, cantidad, fechaLlegada, fechaVencimiento} = req.body;
+
+        //Verificamos que exista dicho lote
+        const lote = await ModeloLote.findById(id);
+        if (!lote) {
+            return res.status(404).json({success:false,message:'Lote no encontrado'});
+        }
+
+        //Actualizamos los campos
+        lote.proveedor = proveedor || lote.proveedor;
+        lote.cantidad = cantidad || lote.cantidad;
+        lote.fechaLlegada = fechaLlegada || lote.fechaLlegada;
+        lote.fechaVencimiento = fechaVencimiento || lote.fechaVencimiento;
+
+        await lote.save();
+
+        res.status(200).json({success:true,message:'Lote actualizado correctamente'});
         
     } catch (error) {
         
@@ -603,6 +658,29 @@ const obtenerTipos = async (req, res) => {
 
     } catch (error) {
 
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
+
+    }
+}
+
+//API para crear un nuevo tipo de medicamento
+const nuevoTipo = async (req,res) => {
+    try {
+
+        const {nombre} = req.body;
+
+        if (!nombre) {
+            return res.status(400).json({success:false,message:'Campos no completados'});
+        }
+
+        const nuevoTipo = new ModeloTipo({nombre});
+        await nuevoTipo.save();
+
+        res.status(201).json({success:true,message:'Nuevo tipo de medicamento añadido'})
+        
+    } catch (error) {
+        
         console.log(error);
         res.status(500).json({ success: false, message: error.message });
 
@@ -654,6 +732,23 @@ const nuevaPresentacion = async (req, res) => {
     }
 }
 
+//API para eliminar una presentación
+const eliminarPresentacion = async (req,res) => {
+    try {
+
+        const {id} = req.params;
+
+        await ModeloPresentacion.findByIdAndDelete(id);
+        res.status(204).json({success:true,message:'Presentación de produto eliminada'});
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
+
+    }
+}
+
 //API para editar presentación existente
 const editarPresentacion = async (req, res) => {
     try {
@@ -671,13 +766,100 @@ const editarPresentacion = async (req, res) => {
 
 // -------------------------------------- VENTAS---------------------------------------------
 
+//API para generar una nueva venta
+const nuevaVenta = async (req, res) => {
+  try {
+
+    //PRODUCTOS: Array de distintos productos
+    const { productos, nombreCliente, DNICliente, idVendedor, metodoPago } = req.body;
+
+    if (!productos || !nombreCliente || !DNICliente || !idVendedor || !metodoPago) {
+      return res.status(400).json({ success: false, message: "Todos los campos son obligatorios." });
+    }
+
+    let total = 0;
+    const detalleProductos = [];
+
+    for (const item of productos) {
+      const { producto, cantidad } = item;
+
+      if (!mongoose.Types.ObjectId.isValid(producto)) {
+        return res.status(400).json({ success: false, message: `ID de producto inválido: ${producto}` });
+      }
+
+      // Buscar lotes válidos (no vencidos), ordenados por fecha de vencimiento
+      const lotes = await ModeloLote.find({
+        producto,
+        fechaVencimiento: { $gt: new Date() },
+        cantidad: { $gt: 0 }
+      }).sort({ fechaVencimiento: 1 });
+
+      if (lotes.length === 0) {
+        return res.status(400).json({ success: false, message: `No hay lotes disponibles para el producto solicitado.` });
+      }
+
+      let cantidadPendiente = cantidad;
+      const subDetalle = [];
+
+      for (const lote of lotes) {
+        if (cantidadPendiente === 0) break;
+
+        const cantidadUsada = Math.min(cantidadPendiente, lote.cantidad);
+
+        subDetalle.push({
+          lote: lote._id,
+          cantidad: cantidadUsada,
+          precioUnitario: lote.precio
+        });
+
+        // Restar stock del lote
+        lote.cantidad -= cantidadUsada;
+        await lote.save();
+
+        total += cantidadUsada * lote.precio;
+        cantidadPendiente -= cantidadUsada;
+      }
+
+      if (cantidadPendiente > 0) {
+        return res.status(400).json({ success: false, message: `Stock insuficiente para el producto.` });
+      }
+
+      detalleProductos.push({
+        producto,
+        lotes: subDetalle
+      });
+    }
+
+    // Crear la venta
+    const nuevaVenta = new ModeloVenta({
+      productos: detalleProductos,
+      nombreCliente,
+      DNICliente,
+      idVendedor,
+      metodoPago,
+      precioTotal: total,
+      completada: true
+    });
+
+    await nuevaVenta.save();
+
+    res.status(201).json({ success: true, message: "Venta registrada exitosamente.", venta: nuevaVenta });
+
+  } catch (error) {
+    console.error("Error al registrar venta:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
 export {
     loginAdmin,
     añadirVendedor, obtenerVendedores, eliminarVendedor, editarVendedor,
     obtenerProductos, nuevoProducto, eliminarProducto, editarProducto,
-    obtenerLotes, nuevoLote,
+    obtenerLotes, nuevoLote, eliminarLote, editarLote,
     obtenerLaboratorios, nuevoLaboratorio, eliminarLaboratorio, editarLaboratorio,
-    obtenerTipos,
-    obtenerPresentaciones, nuevaPresentacion,
-    obtenerProveedores, nuevoProveedor, eliminarProveedor, editarProveedor
+    obtenerTipos, nuevoTipo,
+    obtenerPresentaciones, nuevaPresentacion, eliminarPresentacion, editarPresentacion,
+    obtenerProveedores, nuevoProveedor, eliminarProveedor, editarProveedor,
+    nuevaVenta
 };

@@ -5,7 +5,10 @@ import { AdminContext } from "../../context/AdminContext";
 
 
 function CartaProducto({ infoProducto }) {
-    const {moneda} = useContext(AppContext);
+    
+    const {
+        moneda,
+    } = useContext(AppContext);
 
     return (
         <div className="w-64 h-[380px] p-4 rounded-xl border border-[#15D0EF] shadow-md bg-white flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
@@ -36,7 +39,7 @@ function CartaProducto({ infoProducto }) {
 
             <div className="flex justify-between items-center">
                 <p className="text-lg font-bold text-green-600 mt-2">
-                    {simboloDinero} {infoProducto.precio}
+                    {moneda} {infoProducto.precio}
                 </p>
                 <BotonCarrito />
             </div>

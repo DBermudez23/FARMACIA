@@ -12,7 +12,7 @@ function NuevoLaboratorioForm() {
   const [telefono, setTelefono] = useState('');
   const [mail, setMail] = useState('');
 
-  const {backendURL, aToken} = useContext(AdminContext);
+  const { backendURL, aToken } = useContext(AdminContext);
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -27,24 +27,19 @@ function NuevoLaboratorioForm() {
     formData.append('telefono', telefono);
     formData.append('mail', mail);
 
+    /*formData.forEach((value, key) => {
+      console.log(`${key} : ${value}`);
+    });*/
+
     try {
-      const {data} = await axios.post(
-        backendURL + `/api/admin/nuevo-laboratorio`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            aToken
-          }
-        }
-      )
+      const { data } = await axios.post(backendURL + `/api/admin/nuevo-laboratorio`, formData, { headers: {'Content-Type': 'application/json', aToken }});
 
       if (data.success) {
         toast.success(data.message);
         setNombre('');
         setDireccion('');
         setTelefono('');
-        setTelefono('');
+        setMail('');
       } else {
         toast.error(data.message);
       }
@@ -65,6 +60,7 @@ function NuevoLaboratorioForm() {
             onChange={(e) => setNombre(e.target.value)}
             type="text"
             id="nombre"
+            value={nombre}
             className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF] transition duration-200"
           />
         </div>
@@ -76,6 +72,7 @@ function NuevoLaboratorioForm() {
             onChange={(e) => setDireccion(e.target.value)}
             type="text"
             id="direccion"
+            value={direccion}
             className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF] transition duration-200"
           />
         </div>
@@ -87,6 +84,7 @@ function NuevoLaboratorioForm() {
             onChange={(e) => setTelefono(e.target.value)}
             type="text"
             id="telefono"
+            value={telefono}
             className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF] transition duration-200"
           />
         </div>
@@ -98,6 +96,7 @@ function NuevoLaboratorioForm() {
             onChange={(e) => setMail(e.target.value)}
             type="text"
             id="telefono"
+            value={mail}
             className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF] transition duration-200"
           />
         </div>

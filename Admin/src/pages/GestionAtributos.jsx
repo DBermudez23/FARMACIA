@@ -16,11 +16,6 @@ const presentaciones = [
   { codigo: "PRES003", nombre: "Inyectable", descripcion: "Solución inyectable de 10ml" }
 ];
 
-const tipos =[
-  {tipo : "COMERCIAL"},
-  {tipo : "GENÉRICO"},
-  {tipo : "OTC"}
-]
 
 
 function GestionAtributos() {
@@ -83,7 +78,7 @@ function GestionAtributos() {
             <GestionPresentaciones presentaciones={presentaciones} />
           )}
           {mostrarTipos && (
-            <GestionTipos tipos={tipos} />
+            <GestionTipos />
           )}
         </div>
 

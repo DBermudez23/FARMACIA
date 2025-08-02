@@ -18,17 +18,12 @@ const AdminContextProvider = (props) => {
 
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-    const clienteAxios = axios.create({
-        baseURL: backendURL,
-        headers : {aToken}
-    });
-
 
     //----------------------------------------------------------- GESTIÓN DE PRODUCTOS-------------------------------------------------------------
     const obtenerProductos = async () => {
         try {
 
-            const {data} = await clienteAxios.get('/api/admin/obtener-productos');
+            const {data} = await axios.get(backendURL + '/api/admin/obtener-productos', {headers: {aToken}});
             if (data.success) {
                 setProductos(data.productos);
             } else {
@@ -40,28 +35,13 @@ const AdminContextProvider = (props) => {
         }
     }
 
-    const eliminarProducto = async (id) => {
-        try {
-            
-            const {data} = await clienteAxios.delete(`/api/admin/eliminar-producto/${id}`);
-            if (data.success) {
-                toast.success(data.message);
-                obtenerProductos();
-            } else {
-                toast.error(data.message);
-            }
-
-        } catch (error) {
-            toast.error(error.message);
-        }
-    }
 
     //----------------------------------------------------------- GESTIÓN DE LOTES-------------------------------------------------------------
 
     const obtenerLotes = async () => {
         try {
 
-            const {data} = await clienteAxios.get('/api/admin/obtener-lotes');
+            const {data} = await axios.get(backendURL + '/api/admin/obtener-lotes', {headers: {aToken}});
             if (data.success) {
                 toast.success(data.message);
                 setLotes(data.lotes)
@@ -76,8 +56,8 @@ const AdminContextProvider = (props) => {
     const obtenerLaboratorios = async () => {
         try {
 
-            const {data} = await clienteAxios.get('/api/admin/obtener-laboratorios');
-            if (data.succcess) {
+            const {data} = await axios.get(backendURL + '/api/admin/obtener-laboratorios', {headers: {aToken}});
+            if (data.success) {
                 setLaboratorios(data.laboratorios);
             } else {
                 toast.error(data.message);
@@ -93,7 +73,7 @@ const AdminContextProvider = (props) => {
     const obtenerPresentaciones = async () => {
         try {
             
-            const {data} = await clienteAxios.get('/api/admin/obtener-presentaciones');
+            const {data} = await axios.get(backendURL + '/api/admin/obtener-presentaciones', {headers: {aToken}});
             if (data.success) {
                 setPresentaciones(data.presentaciones);
             } else {
@@ -110,7 +90,7 @@ const AdminContextProvider = (props) => {
     const obtenerTipos = async () => {
         try {
 
-            const {data} = await clienteAxios.get('/api/admin/obtener-tipos');
+            const {data} = await axios.get(backendURL + '/api/admin/obtener-tipos', {headers: {aToken}});
             if (data.success) {
                 setTipos(data.tipos);
             } else {
@@ -126,7 +106,7 @@ const AdminContextProvider = (props) => {
     const obtenerProveedores = async () => {
         try {
 
-            const {data} = await clienteAxios.get('/api/admin/obtener-proveedores');
+            const {data} = await axios.get(backendURL + '/api/admin/obtener-proveedores', {headers: {aToken}});
             if (data.success) {
                 setProveedores(data.proveedores);
             } else {
@@ -143,7 +123,7 @@ const AdminContextProvider = (props) => {
     const obtenerVendedores = async () => {
         try {
 
-            const {data} = await clienteAxios.get('/api/admin/obtener-vendedores');
+            const {data} = await axios.get(backendURL + '/api/admin/obtener-vendedores', {headers: {aToken}});
             if (data.success) {
                 setVendedores(data.vendedores);
             } else {
@@ -158,8 +138,8 @@ const AdminContextProvider = (props) => {
 
     const value = {
         aToken, setAToken,
-        backendURL, clienteAxios,
-        productos, obtenerProductos, setProductos,eliminarProducto,
+        backendURL,
+        productos, obtenerProductos, setProductos,
         proveedores, obtenerProveedores, setProveedores,
         laboratorios, obtenerLaboratorios, setLaboratorios,
         vendedores, obtenerVendedores, setVendedores,

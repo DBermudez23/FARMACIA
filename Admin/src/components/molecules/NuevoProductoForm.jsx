@@ -6,6 +6,7 @@ import { AdminContext } from "../../context/AdminContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 import subir from '../../assets/Upload.svg';
+import { useEffect } from "react";
 
 function NuevoProductoForm({ setNuevoProducto }) {
 
@@ -20,8 +21,21 @@ function NuevoProductoForm({ setNuevoProducto }) {
   const { moneda } = useContext(AppContext);
   const {
     backendURL, aToken,
-    laboratorios, tipos, presentaciones
+    laboratorios, obtenerLaboratorios,
+    tipos, obtenerTipos,
+    presentaciones, obtenerPresentaciones
   } = useContext(AdminContext);
+
+  useEffect(()=> {
+    if (aToken) {
+      obtenerLaboratorios();
+      obtenerTipos();
+      obtenerPresentaciones();
+    } 
+  }, [aToken])
+
+  console.log(laboratorios);
+
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -45,7 +59,7 @@ function NuevoProductoForm({ setNuevoProducto }) {
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/json',
             aToken
           }
         }

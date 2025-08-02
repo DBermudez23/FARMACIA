@@ -1,9 +1,48 @@
 import { useState } from "react";
 import añadir from "../../assets/añadir.svg";
+import { toast } from "react-toastify";
+import { useContext } from "react";
+import { AdminContext } from "../../context/AdminContext";
+import axios from "axios";
+import { useEffect } from "react";
 
-function GestionTipos({ tipos }) {
+function GestionTipos() {
 
     const [nuevoTipo, setNuevoTipo] = useState(false);
+
+    const [nombre, setNombre] = useState('');
+
+    const {backendURL, aToken, tipos, obtenerTipos} = useContext(AdminContext);
+
+    useEffect(() => {
+        if (aToken) {
+            obtenerTipos();
+        }
+    }, [aToken]);
+
+    const onSubmitHandler = async (event) => {
+        event.preventDefault();
+
+        if (!nombre) {
+            toast.error('Debe incluir un nombre');
+        }
+
+        const formData = new FormData();
+        formData.append('nombre', nombre);
+
+        try {
+            const {data} = await axios.post(backendURL + '/api/admin/nuevo-tipo', formData, {headers: {'Content-Type': 'application/json', aToken}});
+            if (data.success) {
+                toast.success(data.message);
+                setNombre('');
+                obtenerTipos();
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
 
     return (
         <div className="w-full px-4 sm:px-8 py-8">
@@ -26,14 +65,16 @@ function GestionTipos({ tipos }) {
             {nuevoTipo && (
                 <>
                     <h2 className="text-2xl font-bold text-[#15D0EF] mb-4">NUEVO TIPO</h2>
-                    <form>
+                    <form onSubmit={onSubmitHandler}>
                         <div className="mb-4">
                             <label htmlFor="nombre" className="block text-sm font-semibold text-gray-700 mb-2">
                                 Nombre:
                             </label>
                             <input
+                                onChange={(e) => setNombre(e.target.value)}
                                 type="text"
                                 id="nombre"
+                                value={nombre}
                                 className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF] transition duration-200"
                             />
                         </div>
@@ -61,8 +102,8 @@ function GestionTipos({ tipos }) {
                     className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#15D0EF] transition duration-200"
                 >
                     {tipos.map((tipo, index) => (
-                        <option key={index} value={tipo.tipo}>
-                            {tipo.tipo}
+                        <option key={index} value={tipo.nombre}>
+                            {tipo.nombre}
                         </option>
                     ))}
                 </select>

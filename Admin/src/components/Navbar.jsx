@@ -8,7 +8,9 @@ function Navbar() {
 
   const navigate = useNavigate();
 
-  const {productosCarrito} = useContext(AppContext);
+  const {
+    carritoCompras
+  } = useContext(AppContext);
   const {aToken, setAToken} = useContext(AdminContext);
 
   const logOut = () => {
@@ -35,7 +37,7 @@ function Navbar() {
           </div>
           {/* Burbuja de notificación */}
           <span className="absolute -top-2 -right-2 bg-[#FDB750] text-white text-sm font-bold w-6 h-6 flex items-center justify-center rounded-full">
-            {productosCarrito}
+            {carritoCompras.length}
           </span>
         </div>
 
