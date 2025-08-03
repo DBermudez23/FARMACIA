@@ -118,7 +118,7 @@ function TablaLaboratorios() {
             return (
               <tr key={idx} className="bg-gray-300 text-center text-sm">
                 <td className={`border-r border-t px-2 py-1 ${isLast ? "rounded-bl-xl" : ""}`}>
-                  {lab._id.slice(0, 4)}
+                  {lab._id.slice(0, 8)}
                 </td>
 
                 <td className="border-r border-t px-2 py-1">

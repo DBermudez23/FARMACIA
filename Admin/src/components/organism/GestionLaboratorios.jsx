@@ -42,7 +42,7 @@ function GestionLaboratorios() {
 
             {/* Tabla */}
             <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 my-10">
-                <TablaLaboratorios laboratorios={laboratorios} />
+                <TablaLaboratorios />
             </div>
         </div>
     )

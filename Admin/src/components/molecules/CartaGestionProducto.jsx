@@ -9,30 +9,19 @@ import subir from '../../assets/Upload.svg';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
-/*const laboratorios = [
-    { id: 1, nombre: 'Laboratorio A' },
-    { id: 2, nombre: 'Laboratorio B' },
-    { id: 3, nombre: 'Laboratorio C' },
-] */
-
-const presentaciones = [
-    { id: 1, nombre: 'Tabletas' },
-    { id: 2, nombre: 'Jarabe' },
-    { id: 3, nombre: 'Crema' },
-];
-
-
 function CartaGestionProducto({ infoProducto }) {
 
     const { moneda } = useContext(AppContext);
 
     const {
         backendURL,
+        aToken,
         eliminarProducto,
         laboratorios,
         tipos,
         presentaciones
     } = useContext(AdminContext);
+
 
     const [editarProducto, setEditarProducto] = useState(false);
     const [nuevaImagen, setNuevaImagen] = useState(false);
@@ -61,8 +50,7 @@ function CartaGestionProducto({ infoProducto }) {
 
             const { data } = await axios.put(backendURL + `/api/admin/editar-producto/${infoProducto._id}`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                    aToken: localStorage.getItem('aToken')
+                    aToken
                 }
             });
 
@@ -160,7 +148,7 @@ function CartaGestionProducto({ infoProducto }) {
                                 className="border border-gray-300 rounded px-2 py-1 text-sm w-full text-gray-800 mt-1"
                             >
                                 {laboratorios.map((lab) => (
-                                    <option key={lab.id} value={lab.nombre}>
+                                    <option key={lab._id} value={lab.nombre}>
                                         {lab.nombre}
                                     </option>
                                 ))}
@@ -182,7 +170,7 @@ function CartaGestionProducto({ infoProducto }) {
                                 className="border border-gray-300 rounded px-2 py-1 text-sm w-full text-gray-800 mt-1"
                             >
                                 {tipos.map((tipo) => (
-                                    <option key={tipo.id} value={tipo.nombre}>
+                                    <option key={tipo._id} value={tipo.nombre}>
                                         {tipo.nombre}
                                     </option>
                                 ))}
@@ -204,7 +192,7 @@ function CartaGestionProducto({ infoProducto }) {
                                 className="border border-gray-300 rounded px-2 py-1 text-sm w-full text-gray-800 mt-1"
                             >
                                 {presentaciones.map((pres) => (
-                                    <option key={pres.id} value={pres.nombre}>
+                                    <option key={pres._id} value={pres.nombre}>
                                         {pres.nombre}
                                     </option>
                                 ))}

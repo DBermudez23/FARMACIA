@@ -39,6 +39,7 @@ function NuevoProductoForm({ setNuevoProducto }) {
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+    console.log(tipo, presentacion, laboratorio)
 
     if (!nombre || !tipo || !laboratorio || !presentacion || !precio || !imagen) {
       return toast.error('Todos los campos son obligatorios');
@@ -59,7 +60,6 @@ function NuevoProductoForm({ setNuevoProducto }) {
         formData,
         {
           headers: {
-            'Content-Type': 'application/json',
             aToken
           }
         }
@@ -75,10 +75,10 @@ function NuevoProductoForm({ setNuevoProducto }) {
         setTipo('');
         setInfoAdicional('');
       } else {
-        toast.error(data.message || "Error al crear el producto");
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message || "Error al conectar con el servidor");
+      toast.error(error.message);
     }
   };
 

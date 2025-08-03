@@ -2,10 +2,21 @@ import { useState } from 'react'
 import TablaPresentaciones from '../molecules/TablaPresentaciones'
 import añadir from '../../assets/añadir.svg';
 import NuevaPresentacionForm from '../molecules/NuevaPresentacionForm';
+import { useContext } from 'react';
+import { AdminContext } from '../../context/AdminContext';
+import { useEffect } from 'react';
 
-function GestionPresentaciones({ presentaciones }) {
+function GestionPresentaciones() {
 
-    const [nuevoTipo, setNuevoTipo] = useState(false);
+    const [nuevaPresentacion, setNuevaPresentacion] = useState(false);
+
+    const {presentaciones, obtenerPresentaciones, aToken} = useContext(AdminContext);
+
+    useEffect(() => {
+        if (aToken) {
+            obtenerPresentaciones();
+        }
+    })
 
     return (
         <div className="w-full px-4 sm:px-8 py-8">
@@ -20,12 +31,12 @@ function GestionPresentaciones({ presentaciones }) {
             </p>
 
             {/* Botón para añadir nueva presentación */}
-            <div className="flex items-center gap-4 mt-6 mb-10 cursor-pointer " onClick={() => setNuevoTipo(!nuevoTipo)}>
+            <div className="flex items-center gap-4 mt-6 mb-10 cursor-pointer " onClick={() => setNuevaPresentacion(!nuevaPresentacion)}>
                 <img src={añadir} alt="Nueva Presentación" />
                 <p className="text-[#15D0EF]">NUEVA PRESENTACIÓN</p>
             </div>
 
-            {nuevoTipo && (
+            {nuevaPresentacion && (
                 <NuevaPresentacionForm />
             )}
 
