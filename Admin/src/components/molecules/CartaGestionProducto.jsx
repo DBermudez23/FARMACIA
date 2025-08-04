@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { AdminContext } from '../../context/AdminContext';
 import BotonEditar from '../atoms/BotonEditar';
@@ -17,9 +17,9 @@ function CartaGestionProducto({ infoProducto }) {
         backendURL,
         aToken,
         eliminarProducto,
-        laboratorios,
-        tipos,
-        presentaciones
+        laboratorios, obtenerLaboratorios,
+        tipos, obtenerTipos,
+        presentaciones, obtenerPresentaciones
     } = useContext(AdminContext);
 
 
@@ -43,10 +43,7 @@ function CartaGestionProducto({ infoProducto }) {
             formData.append('laboratorio', productoEditado.laboratorio);
             formData.append('precio', productoEditado.precio);
             formData.append('tipo', productoEditado.tipo);
-
-            if (nuevaImagen) {
-                formData.append('imagen', nuevaImagen);
-            }
+            nuevaImagen && formData.append('imagen', nuevaImagen);
 
             const { data } = await axios.put(backendURL + `/api/admin/editar-producto/${infoProducto._id}`, formData, {
                 headers: {
@@ -74,9 +71,22 @@ function CartaGestionProducto({ infoProducto }) {
         });
     };
 
+    useEffect(() => {
+        if (aToken) {
+            obtenerLaboratorios();
+            obtenerPresentaciones();
+            obtenerTipos();
+        }
+    }, [aToken])
+
+
+
+
+
+
     return (
         <div className="w-64 min-h-[380px] p-4 rounded-xl border border-[#15D0EF] shadow-md bg-white flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
-            
+
 
             {/*IMAGEN */}
             {
@@ -123,7 +133,7 @@ function CartaGestionProducto({ infoProducto }) {
                     ? (
                         <input
                             type="text"
-                            value={infoProducto.nombre}
+                            value={productoEditado.nombre}
                             className="w-full border rounded px-3 py-1 mb-2"
                             onChange={handleChange}
                         />
@@ -134,7 +144,7 @@ function CartaGestionProducto({ infoProducto }) {
             <div className="flex flex-col items-start text-left mt-2 space-y-1 overflow-hidden">
 
                 <p className="text-sm text-gray-600 w-full max-w-[220px] truncate">
-                    <span className="font-bold">ID PRODUCTO:</span> {infoProducto._id}
+                    <span className="font-bold">ID PRODUCTO:</span> {infoProducto._id.slice(0, 6)}
                 </p>
 
                 <p className="text-sm text-gray-600 w-full max-w-[220px]">
@@ -148,13 +158,13 @@ function CartaGestionProducto({ infoProducto }) {
                                 className="border border-gray-300 rounded px-2 py-1 text-sm w-full text-gray-800 mt-1"
                             >
                                 {laboratorios.map((lab) => (
-                                    <option key={lab._id} value={lab.nombre}>
+                                    <option key={lab._id} value={lab._id}>
                                         {lab.nombre}
                                     </option>
                                 ))}
                             </select>
                         ) : (
-                            infoProducto.laboratorio
+                            laboratorios.find(lab => lab._id === infoProducto.laboratorio)?.nombre || "No disponible"
                         )
                     }
                 </p>
@@ -170,13 +180,13 @@ function CartaGestionProducto({ infoProducto }) {
                                 className="border border-gray-300 rounded px-2 py-1 text-sm w-full text-gray-800 mt-1"
                             >
                                 {tipos.map((tipo) => (
-                                    <option key={tipo._id} value={tipo.nombre}>
+                                    <option key={tipo._id} value={tipo._id}>
                                         {tipo.nombre}
                                     </option>
                                 ))}
                             </select>
                         ) : (
-                            infoProducto.tipo
+                            tipos.find((tipo) => tipo._id === infoProducto.tipo)?.nombre || "No disponible"
                         )
                     }
                 </p>
@@ -192,13 +202,13 @@ function CartaGestionProducto({ infoProducto }) {
                                 className="border border-gray-300 rounded px-2 py-1 text-sm w-full text-gray-800 mt-1"
                             >
                                 {presentaciones.map((pres) => (
-                                    <option key={pres._id} value={pres.nombre}>
+                                    <option key={pres._id} value={pres._id}>
                                         {pres.nombre}
                                     </option>
                                 ))}
                             </select>
                         ) : (
-                            infoProducto.presentacion
+                            presentaciones.find((pres) => pres._id === infoProducto.presentacion)?.nombre || "No disponibles"
                         )
                     }
                 </p>
@@ -223,7 +233,7 @@ function CartaGestionProducto({ infoProducto }) {
                     }
                 </p>
 
-
+                
                 {
                     editarProducto
                         ? (<div className="flex gap-3 justify-center items-center mt-4">
@@ -233,7 +243,7 @@ function CartaGestionProducto({ infoProducto }) {
                         : (
                             <div className="flex gap-3 justify-center items-center mt-4">
                                 <BotonEditar onClick={() => setEditarProducto(!editarProducto)} />
-                                <BotonEliminar onClick={eliminarProducto}/>
+                                <BotonEliminar onClick={eliminarProducto} />
                             </div>
                         )
                 }

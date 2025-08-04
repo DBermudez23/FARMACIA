@@ -3,15 +3,25 @@ import BarraBusqueda from '../components/atoms/BarraBusqueda';
 import añadir from '../assets/añadir.svg';
 import NuevoProveedorForm from '../components/molecules/NuevoProveedorForm';
 import TablaProveedores from '../components/molecules/TablaProveedores';
-
-const proveedores = [
-  { codigo: "PROV001", nombre: "Proveedor A", direccion: "Calle Falsa 123", telefono: "123456789" },
-  { codigo: "PROV002", nombre: "Proveedor B", direccion: "Avenida Siempre Viva 456", telefono: "987654321" },
-  { codigo: "PROV003", nombre: "Proveedor C", direccion: "Boulevard de los Sueños Rotos 789", telefono: "456123789" }
-];
+import { useContext } from 'react';
+import { AdminContext } from '../context/AdminContext';
+import { useEffect } from 'react';
 
 function GestionProveedores() {
   const [nuevoProveedor, setNuevoProveedor] = useState(false);
+
+  const {
+    aToken,
+    proveedores, obtenerProveedores
+  } = useContext(AdminContext);
+
+  useEffect(() => {
+    if (aToken) {
+      obtenerProveedores();
+    }
+  }, [aToken])
+
+  //console.log(proveedores)
 
   return (
     <div className='w-full flex flex-wrap justify-center overflow-y-scroll'>
@@ -30,7 +40,7 @@ function GestionProveedores() {
           <p className="text-[#15D0EF]">NUEVO PROVEEDOR</p>
         </div>
 
-        {nuevoProveedor && <NuevoProveedorForm />}
+        {nuevoProveedor && <NuevoProveedorForm setNuevoProveedor={setNuevoProveedor}/>}
 
         <div className='bg-white rounded-lg shadow-md p-4 sm:p-6 my-10'>
           <TablaProveedores proveedores={proveedores} />

@@ -3,10 +3,32 @@ import BotonEditarMini from "../atoms/BotonEditarMini";
 import BotonEliminarMini from "../atoms/BotonEliminarMini";
 import BotonConfirmarTablas from "../atoms/BotonConfirmarTablas";
 import BotonCancelarTablas from "../atoms/BotonCancelarTablas";
+import { AdminContext } from "../../context/AdminContext";
+import { useEffect } from "react";
+import { useContext } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import ModalEliminar from "./ModalEliminar";
 
-function TablaProveedores({ proveedores }) {
+
+function TablaProveedores() {
   const [filaEditando, setFilaEditando] = useState(null);
   const [valoresEditados, setValoresEditados] = useState({});
+
+  const [proveedorSeleccionado, setProveedorSeleccionado] = useState(null);
+  const [mostrarModal, setMostrarModal] = useState(false);
+
+  const {aToken, proveedores, obtenerProveedores, backendURL} = useContext(AdminContext);
+
+  useEffect(() => {
+    if (aToken) {
+      obtenerProveedores();
+    }
+  }, [aToken])
+
+  useEffect(() => {
+    obtenerProveedores();
+  }, [proveedores])
 
   const handleEditar = (idx, prov) => {
     setFilaEditando(idx);
@@ -25,6 +47,58 @@ function TablaProveedores({ proveedores }) {
     });
   };
 
+  const handleConfirmar = async (lab) => {
+    try {
+      const {data} = await axios.put(
+        backendURL + `/api/admin/editar-proveedor/${lab._id}`, 
+        valoresEditados, 
+        {headers: {aToken}}
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        setFilaEditando(null);
+        setValoresEditados({});
+        obtenerProveedores();
+      } else {
+        toast.error(data.message);
+      }
+      
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
+
+  //Al hacer click en eliminar se mostrara la modal que solicitara la contraseña
+  const handleEliminarClick = (prov) => {
+    setProveedorSeleccionado(prov);
+    setMostrarModal(true);
+  }
+
+  const eliminarProveedor = async (contraseñaAdmin) => {
+    try {
+      const {data} = await axios.delete(
+        backendURL + `/api/admin/eliminar-proveedor/${proveedorSeleccionado._id}`,
+        {
+          headers: {aToken},
+          data: {contraseña : contraseñaAdmin}
+        }
+      )
+      if (data.success) {
+        obtenerProveedores();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      toast.success('Proveedor eliminado correctamente');
+      setMostrarModal(false);
+      setProveedorSeleccionado(null);
+      obtenerProveedores();
+    }
+  }
+
   return (
     <div className="overflow-hidden rounded-xl border">
       <table className="min-w-full table-auto">
@@ -34,18 +108,19 @@ function TablaProveedores({ proveedores }) {
             <th className="border-r px-4 py-2">TELÉFONO</th>
             <th className="border-r px-4 py-2">NOMBRE</th>
             <th className="border-r px-4 py-2">DIRECCIÓN</th>
+            <th className="border-r px-4 py-2">MAIL</th>
             <th className="px-4 py-2 rounded-tr-xl">ACCIONES</th>
           </tr>
         </thead>
         <tbody>
-          {proveedores.map((prov, idx) => {
+          {proveedores && proveedores.map((prov, idx) => {
             const isEditing = filaEditando === idx;
             const isLast = idx === proveedores.length - 1;
 
             return (
               <tr key={idx} className="bg-gray-300 text-center text-sm">
                 <td className={`border-r border-t px-2 py-2 ${isLast ? 'rounded-bl-xl' : ''}`}>
-                  {prov.codigo}
+                  {prov._id.slice(0, 6)}
                 </td>
 
                 <td className="border-r border-t px-2 py-2">
@@ -90,16 +165,30 @@ function TablaProveedores({ proveedores }) {
                   )}
                 </td>
 
+                <td className="border-r border-t px-2 py-2">
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="mail"
+                      value={valoresEditados.mail}
+                      onChange={handleInputChange}
+                      className="w-full px-2 py-1 rounded-md border border-black bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                    />
+                  ) : (
+                    prov.mail
+                  )}
+                </td>
+
                 <td className="border-t px-2 py-2">
                   {isEditing ? (
                     <div className="flex justify-center items-center gap-2">
-                      <BotonConfirmarTablas onClick={() => setFilaEditando(null)} />
+                      <BotonConfirmarTablas onClick={() => handleConfirmar(prov)} />
                       <BotonCancelarTablas onClick={handleCancelar} />
                     </div>
                   ) : (
                     <div className="flex justify-center items-center gap-2">
                       <BotonEditarMini onClick={() => handleEditar(idx, prov)} />
-                      <BotonEliminarMini />
+                      <BotonEliminarMini onClick={() => handleEliminarClick(prov)}/>
                     </div>
                   )}
                 </td>
@@ -108,6 +197,13 @@ function TablaProveedores({ proveedores }) {
           })}
         </tbody>
       </table>
+
+      <ModalEliminar
+        visible={mostrarModal}
+        onClose={() => setMostrarModal(false)}
+        onConfirm={eliminarProveedor }
+        nombreElemento={proveedorSeleccionado?.nombre || "este proveedor"}
+      />
     </div>
   );
 }

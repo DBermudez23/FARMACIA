@@ -283,7 +283,7 @@ const editarProducto = async (req, res) => {
         }
 
         //Validamos si hay una nueva imagen, en caso de que la haya la subimos a cloudinary
-        let nuevaImagenURL = vendedor.imagen;
+        let nuevaImagenURL = producto.imagen;
         if (imagen) {
             const subirImagen = await cloudinary.uploader.upload(imagen.path);
             nuevaImagenURL = subirImagen.secure_url;

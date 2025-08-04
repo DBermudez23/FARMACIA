@@ -105,12 +105,13 @@ function PanelPrincipal() {
           <TablaMedicamentos medicamentos={medicamentos} />
         </div>
 
-        {/* PRODUCTOS */}
+        {/* PRODUCTOS 
         <div className="my-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center">
           {productos.map((producto, i) => (
             <CartaProducto key={i} infoProducto={producto} />
           ))}
         </div>
+        */}
 
 
       </div>
