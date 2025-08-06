@@ -55,37 +55,49 @@ const obtenerVendedores = async (req, res) => {
 const añadirVendedor = async (req, res) => {
     try {
 
-        const { nombre, mail, contraseña, telefono, nacimiento, genero, direccion } = req.body;
+        const { nombre, mail, contrasena, telefono, nacimiento, genero, direccion } = req.body;
         const imagen = req.file;
 
+        console.log(req.body);
+
         //Validaciones de campos requeridos
-        if (!nombre || !mail || !contraseña || !telefono || !nacimiento || !genero || !direccion) {
-            return res.json({ success: false, message: 'Campos incompletos' });
+        if (!nombre || !mail || !contrasena || !telefono || !nacimiento || !genero || !direccion) {
+            return res.status(400).json({ success: false, message: 'Campos incompletos' });
         }
 
         //Validamos el formato del correo
-        if (!validator.isEmail) {
+        if (!validator.isEmail(mail)) {
             return res.json({ success: false, message: 'Formato de correo invalido' });
         }
 
+        //Validamos si ya existe un vendedor con el mismo correo
+        const existe = await ModeloVendedor.findOne({ mail });
+        if (existe) {
+            return res.json({ success: false, message: 'Este correo ya está registrado' });
+        }
+
+
         //Validamos que sea una contraseña segura
-        if (contraseña.length < 8) {
+        if (contrasena.length < 8) {
             return res.json({ success: false, message: 'Contraseña insegura' });
         }
 
         //Encriptamos la contraseña
         const salt = await bcrypt.genSalt(12);
-        const contraseñaEncriptada = await bcrypt.hash(contraseña, salt);
+        const contrasenaEncriptada = await bcrypt.hash(contrasena, salt);
 
-        //Subimos la imagen a cloudinary
-        const subirImagen = await cloudinary.uploader.upload(imagen.path, { resource_type: 'image' });
-        const URLimagen = subirImagen.secure_url;
+        //Subimos la imagen a cloudinary si existe
+        let URLimagen = null;
+        if (imagen) {
+            const subirImagen = await cloudinary.uploader.upload(imagen.path, { resource_type: 'image' });
+            URLimagen = subirImagen.secure_url;
+        }
 
         const vendedorDatos = {
             nombre,
             mail,
             imagen: URLimagen,
-            contraseña: contraseñaEncriptada,
+            contrasena: contrasenaEncriptada,
             telefono,
             nacimiento,
             genero,
@@ -369,7 +381,7 @@ const eliminarLaboratorio = async (req, res) => {
     try {
 
         //Para eliminar un laboratorio es necesaria la contraseña del administrador
-        const contraseña  = req.body.contraseña;
+        const contraseña = req.body.contraseña;
         console.log(contraseña)
         const { id } = req.params;
 
@@ -527,14 +539,14 @@ const editarProveedor = async (req, res) => {
 // --------------------------------------LOTES---------------------------------------------
 
 //API para obtener todos los lotes de la base de datos
-const obtenerLotes = async (req,res) => {
+const obtenerLotes = async (req, res) => {
     try {
 
         const lotes = await ModeloLote.find({});
-        res.status(200).json({success:true,lotes});
-        
+        res.status(200).json({ success: true, lotes });
+
     } catch (error) {
-        
+
         console.log(error);
         res.status(500).json({ success: false, message: error.message });
 
@@ -542,20 +554,20 @@ const obtenerLotes = async (req,res) => {
 }
 
 //API para añadir un nuevo lote
-const nuevoLote = async (req,res) => {
+const nuevoLote = async (req, res) => {
     try {
 
-        const {producto, proveedor, precio, cantidad, fechaLlegada, fechaVencimiento} = req.body;
+        const { producto, proveedor, precio, cantidad, fechaLlegada, fechaVencimiento } = req.body;
 
         if (!producto || !proveedor || !precio || !cantidad || !fechaLlegada || !fechaVencimiento) {
-            return res.status(400).json({success:false,message:'Todos los campos deben estar completos'});
+            return res.status(400).json({ success: false, message: 'Todos los campos deben estar completos' });
         }
 
         //Validamos los ID's de referencia
-        const ids = {producto, proveedor};
+        const ids = { producto, proveedor };
         for (const id in ids) {
             if (!mongoose.Types.ObjectId.isValid(ids[id])) {
-                return res.status(400).json({success:false,message:`El ID de ${id} es invalido`});
+                return res.status(400).json({ success: false, message: `El ID de ${id} es invalido` });
             }
         }
 
@@ -566,7 +578,7 @@ const nuevoLote = async (req,res) => {
         ]);
 
         if (!productoDoc || !proveedorDoc) {
-            return res.status(400).json({success:false,message:'El producto o proveedor asociado no existe'});
+            return res.status(400).json({ success: false, message: 'El producto o proveedor asociado no existe' });
         }
 
         const loteDatos = {
@@ -581,11 +593,11 @@ const nuevoLote = async (req,res) => {
         const nuevoLote = new ModeloLote(loteDatos);
         await nuevoLote.save();
 
-        res.status(201).json({success:true,message:'Nuevo lote creado'});
+        res.status(201).json({ success: true, message: 'Nuevo lote creado' });
 
-        
+
     } catch (error) {
-        
+
         console.log(error);
         res.status(500).json({ success: false, message: error.message });
 
@@ -593,22 +605,22 @@ const nuevoLote = async (req,res) => {
 }
 
 //API para eliminar lote
-const eliminarLote = async (req,res) => {
+const eliminarLote = async (req, res) => {
     try {
 
         //Para eliminar un lote es necesaria la contraseña del administrador
-        const {contraseña} = req.body;
-        const {id} = req.parms;
+        const { contraseña } = req.body;
+        const { id } = req.parms;
 
         if (contraseña !== process.env.ADMIN_CONTRASENA) {
-            return res.status(403).json({success:false,message:'Contraseña incorrecta'});
+            return res.status(403).json({ success: false, message: 'Contraseña incorrecta' });
         }
 
         await ModeloLote.findByIdAndDelete(id);
-        res.status(204).json({success:true,message:'Lote eliminado exitosamente'});
-        
+        res.status(204).json({ success: true, message: 'Lote eliminado exitosamente' });
+
     } catch (error) {
-        
+
         console.log(error);
         res.status(500).json({ success: false, message: error.message });
 
@@ -616,17 +628,17 @@ const eliminarLote = async (req,res) => {
 }
 
 //API para editar lote
-const editarLote = async (req,res) => {
+const editarLote = async (req, res) => {
     try {
 
-        const {id} = req.params;
+        const { id } = req.params;
         //Unicamente se podran editar estos campos
-        const {proveedor, cantidad, fechaLlegada, fechaVencimiento} = req.body;
+        const { proveedor, cantidad, fechaLlegada, fechaVencimiento } = req.body;
 
         //Verificamos que exista dicho lote
         const lote = await ModeloLote.findById(id);
         if (!lote) {
-            return res.status(404).json({success:false,message:'Lote no encontrado'});
+            return res.status(404).json({ success: false, message: 'Lote no encontrado' });
         }
 
         //Actualizamos los campos
@@ -637,10 +649,10 @@ const editarLote = async (req,res) => {
 
         await lote.save();
 
-        res.status(200).json({success:true,message:'Lote actualizado correctamente'});
-        
+        res.status(200).json({ success: true, message: 'Lote actualizado correctamente' });
+
     } catch (error) {
-        
+
         console.log(error);
         res.status(500).json({ success: false, message: error.message });
 
@@ -665,22 +677,22 @@ const obtenerTipos = async (req, res) => {
 }
 
 //API para crear un nuevo tipo de medicamento
-const nuevoTipo = async (req,res) => {
+const nuevoTipo = async (req, res) => {
     try {
 
-        const {nombre} = req.body;
+        const { nombre } = req.body;
 
         if (!nombre) {
-            return res.status(400).json({success:false,message:'Campos no completados'});
+            return res.status(400).json({ success: false, message: 'Campos no completados' });
         }
 
-        const nuevoTipo = new ModeloTipo({nombre});
+        const nuevoTipo = new ModeloTipo({ nombre });
         await nuevoTipo.save();
 
-        res.status(201).json({success:true,message:'Nuevo tipo de medicamento añadido'})
-        
+        res.status(201).json({ success: true, message: 'Nuevo tipo de medicamento añadido' })
+
     } catch (error) {
-        
+
         console.log(error);
         res.status(500).json({ success: false, message: error.message });
 
@@ -733,16 +745,16 @@ const nuevaPresentacion = async (req, res) => {
 }
 
 //API para eliminar una presentación
-const eliminarPresentacion = async (req,res) => {
+const eliminarPresentacion = async (req, res) => {
     try {
 
-        const {id} = req.params;
+        const { id } = req.params;
 
         await ModeloPresentacion.findByIdAndDelete(id);
-        res.status(204).json({success:true,message:'Presentación de produto eliminada'});
-        
+        res.status(204).json({ success: true, message: 'Presentación de produto eliminada' });
+
     } catch (error) {
-        
+
         console.log(error);
         res.status(500).json({ success: false, message: error.message });
 
@@ -753,8 +765,8 @@ const eliminarPresentacion = async (req,res) => {
 const editarPresentacion = async (req, res) => {
     try {
 
-        const {nombre, descripcion} = req.body;
-        const {id} = req.parms;
+        const { nombre, descripcion } = req.body;
+        const { id } = req.parms;
 
     } catch (error) {
 
@@ -768,87 +780,87 @@ const editarPresentacion = async (req, res) => {
 
 //API para generar una nueva venta
 const nuevaVenta = async (req, res) => {
-  try {
+    try {
 
-    //PRODUCTOS: Array de distintos productos
-    const { productos, nombreCliente, DNICliente, idVendedor, metodoPago } = req.body;
+        //PRODUCTOS: Array de distintos productos
+        const { productos, nombreCliente, DNICliente, idVendedor, metodoPago } = req.body;
 
-    if (!productos || !nombreCliente || !DNICliente || !idVendedor || !metodoPago) {
-      return res.status(400).json({ success: false, message: "Todos los campos son obligatorios." });
-    }
+        if (!productos || !nombreCliente || !DNICliente || !idVendedor || !metodoPago) {
+            return res.status(400).json({ success: false, message: "Todos los campos son obligatorios." });
+        }
 
-    let total = 0;
-    const detalleProductos = [];
+        let total = 0;
+        const detalleProductos = [];
 
-    for (const item of productos) {
-      const { producto, cantidad } = item;
+        for (const item of productos) {
+            const { producto, cantidad } = item;
 
-      if (!mongoose.Types.ObjectId.isValid(producto)) {
-        return res.status(400).json({ success: false, message: `ID de producto inválido: ${producto}` });
-      }
+            if (!mongoose.Types.ObjectId.isValid(producto)) {
+                return res.status(400).json({ success: false, message: `ID de producto inválido: ${producto}` });
+            }
 
-      // Buscar lotes válidos (no vencidos), ordenados por fecha de vencimiento
-      const lotes = await ModeloLote.find({
-        producto,
-        fechaVencimiento: { $gt: new Date() },
-        cantidad: { $gt: 0 }
-      }).sort({ fechaVencimiento: 1 });
+            // Buscar lotes válidos (no vencidos), ordenados por fecha de vencimiento
+            const lotes = await ModeloLote.find({
+                producto,
+                fechaVencimiento: { $gt: new Date() },
+                cantidad: { $gt: 0 }
+            }).sort({ fechaVencimiento: 1 });
 
-      if (lotes.length === 0) {
-        return res.status(400).json({ success: false, message: `No hay lotes disponibles para el producto solicitado.` });
-      }
+            if (lotes.length === 0) {
+                return res.status(400).json({ success: false, message: `No hay lotes disponibles para el producto solicitado.` });
+            }
 
-      let cantidadPendiente = cantidad;
-      const subDetalle = [];
+            let cantidadPendiente = cantidad;
+            const subDetalle = [];
 
-      for (const lote of lotes) {
-        if (cantidadPendiente === 0) break;
+            for (const lote of lotes) {
+                if (cantidadPendiente === 0) break;
 
-        const cantidadUsada = Math.min(cantidadPendiente, lote.cantidad);
+                const cantidadUsada = Math.min(cantidadPendiente, lote.cantidad);
 
-        subDetalle.push({
-          lote: lote._id,
-          cantidad: cantidadUsada,
-          precioUnitario: lote.precio
+                subDetalle.push({
+                    lote: lote._id,
+                    cantidad: cantidadUsada,
+                    precioUnitario: lote.precio
+                });
+
+                // Restar stock del lote
+                lote.cantidad -= cantidadUsada;
+                await lote.save();
+
+                total += cantidadUsada * lote.precio;
+                cantidadPendiente -= cantidadUsada;
+            }
+
+            if (cantidadPendiente > 0) {
+                return res.status(400).json({ success: false, message: `Stock insuficiente para el producto.` });
+            }
+
+            detalleProductos.push({
+                producto,
+                lotes: subDetalle
+            });
+        }
+
+        // Crear la venta
+        const nuevaVenta = new ModeloVenta({
+            productos: detalleProductos,
+            nombreCliente,
+            DNICliente,
+            idVendedor,
+            metodoPago,
+            precioTotal: total,
+            completada: true
         });
 
-        // Restar stock del lote
-        lote.cantidad -= cantidadUsada;
-        await lote.save();
+        await nuevaVenta.save();
 
-        total += cantidadUsada * lote.precio;
-        cantidadPendiente -= cantidadUsada;
-      }
+        res.status(201).json({ success: true, message: "Venta registrada exitosamente.", venta: nuevaVenta });
 
-      if (cantidadPendiente > 0) {
-        return res.status(400).json({ success: false, message: `Stock insuficiente para el producto.` });
-      }
-
-      detalleProductos.push({
-        producto,
-        lotes: subDetalle
-      });
+    } catch (error) {
+        console.error("Error al registrar venta:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
-
-    // Crear la venta
-    const nuevaVenta = new ModeloVenta({
-      productos: detalleProductos,
-      nombreCliente,
-      DNICliente,
-      idVendedor,
-      metodoPago,
-      precioTotal: total,
-      completada: true
-    });
-
-    await nuevaVenta.save();
-
-    res.status(201).json({ success: true, message: "Venta registrada exitosamente.", venta: nuevaVenta });
-
-  } catch (error) {
-    console.error("Error al registrar venta:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
 };
 
 
