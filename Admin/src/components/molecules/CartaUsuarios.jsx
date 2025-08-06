@@ -22,6 +22,8 @@ function CartaUsuarios({ usuario }) {
     direccion: usuario.direccion || ""
   });
 
+  const { backendURL, aToken, obtenerVendedores } = useContext(AdminContext);
+
   const actualizarInfoUsuario = async () => {
     const formData = new FormData();
     formData.append('nombre', datosEditados.nombre);
@@ -43,8 +45,6 @@ function CartaUsuarios({ usuario }) {
     }
   }
 
-  const { backendURL, aToken, obtenerVendedores } = useContext(AdminContext);
-
   const handleChange = (e) => {
     setDatosEditados({
       ...datosEditados,
@@ -53,7 +53,7 @@ function CartaUsuarios({ usuario }) {
   };
 
 
-  function calcularEdad(fechaNacimiento) {
+  const calcularEdad = (fechaNacimiento) => {
     if (!fechaNacimiento) return "";
     const hoy = new Date();
     const nacimiento = new Date(fechaNacimiento);
@@ -68,6 +68,7 @@ function CartaUsuarios({ usuario }) {
   const handleCancelar = () => {
     setModoEdicion(false);
     setDatosEditados({ ...usuario });
+    setNuevaImagen(null);
   };
 
   //Al hacer click en eliminar se mostrará la modal que solicitara la contraseña del administrador
@@ -87,15 +88,13 @@ function CartaUsuarios({ usuario }) {
       );
 
       if (data.success) {
-        obtenerVendedores();
+        toast.success('vendedor eliminado correctamente');
+        setMostrarModal(false);
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       toast.error(error.message);
-    } finally {
-      toast.success('vendedor eliminado correctamente');
-      setMostrarModal(false);
     }
   };
 
@@ -154,7 +153,7 @@ function CartaUsuarios({ usuario }) {
             />
             <input
               type="email"
-              name="correo"
+              name="mail"
               value={datosEditados.mail}
               onChange={handleChange}
               className="w-full border rounded-md px-3 py-1 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#15D0EF] transition"
@@ -215,7 +214,7 @@ function CartaUsuarios({ usuario }) {
         ) : (
           <>
             <BotonEditar onClick={() => setModoEdicion(!modoEdicion)} />
-            <BotonEliminar onClick={() => handleEliminarClick(usuario)}/>
+            <BotonEliminar onClick={() => handleEliminarClick(usuario)} />
           </>
         )}
       </div>

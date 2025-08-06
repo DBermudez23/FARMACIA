@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
+import PanelPrincipal from './pages/PanelPrincipal';
+import MiPerfil from './pages/MiPerfil';
+import Contraseña from './pages/Contraseña';
+import PanelVentas from './pages/PanelVentas';
+import Login from './pages/Login';
+import Facturacion from './pages/Facturacion';
+import { useContext } from 'react';
+import { VendedorContext } from './context/VendedorContext';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { token } = useContext(VendedorContext);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+  return token ? (
+    <div>
+      <ToastContainer />
+      <Navbar />
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        {/* Contenedor para scroll */}
+        <div className="flex-1 overflow-y-auto p-4 scroll-smooth">
+          <Routes>
+            <Route path='/admin-panel-principal' element={<PanelPrincipal />} />
+            <Route path='/admin-editar-perfil' element={<MiPerfil />} />
+            <Route path='/admin-editar-contraseña' element={<Contraseña />} />
+            <Route path='/admin-panel-ventas' element={<PanelVentas />} />
+            <Route path='/admin-facturacion' element={<Facturacion />} />
+          </Routes>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
+    : (
+      <>
+        <Login />
+        <ToastContainer />
+      </>
+    )
 }
 
-export default App
+export default App;

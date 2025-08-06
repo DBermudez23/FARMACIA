@@ -1,28 +1,23 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useContext } from "react";
 import axios from "axios";
-import { useContext } from "react";
-import { AdminContext } from "./AdminContext";
 
 export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
-
     const moneda = '$';
 
     const [carritoCompras, setCarritoCompras] = useState([]);
 
-
     const value = {
-        carritoCompras, setCarritoCompras,
-        moneda
+        moneda,
+        carritoCompras, setCarritoCompras
     }
 
     return (
-        <AppContext.Provider value={value}>
+        <AppContext.Provider value={value} >
             {props.children}
         </AppContext.Provider>
     )
-
 }
 
 export default AppContextProvider;

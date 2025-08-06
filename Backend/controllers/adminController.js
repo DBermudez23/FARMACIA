@@ -124,7 +124,7 @@ const eliminarVendedor = async (req, res) => {
 
         //La contraseña del administrador es necesaria para eliminar un vendedor
         const { contraseña } = req.body;
-        const { id } = req.parms;
+        const { id } = req.params;
 
         if (contraseña !== process.env.ADMIN_CONTRASENA) {
             return res.status(403).json({ success: false, message: 'Contraseña incorrecta' });
