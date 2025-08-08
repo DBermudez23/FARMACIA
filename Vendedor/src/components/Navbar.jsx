@@ -1,18 +1,21 @@
+import { useContext } from 'react';
 import { assetsNav } from '../assets/assets';
+import { AppContext } from '../context/AppContext';
+import { VendedorContext } from '../context/VendedorContext';
+import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
 
-  /*const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  const {
-    carritoCompras
-  } = useContext(AppContext);
-  const {aToken, setAToken} = useContext(AdminContext);
+  const {carritoCompras} = useContext(AppContext);
+
+  const {token} = useContext(VendedorContext);
 
   const logOut = () => {
     aToken && setAToken('');
     aToken && localStorage.removeItem('aToken');
-  }*/
+  }
 
   return (
     <div className="flex justify-between items-center px-4 sm:px-10 py-3 border-b-2 border-[#15D0EF] bg-white">

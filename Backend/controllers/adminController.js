@@ -581,13 +581,31 @@ const nuevoLote = async (req, res) => {
             return res.status(400).json({ success: false, message: 'El producto o proveedor asociado no existe' });
         }
 
+        if (isNaN(precio) || isNaN(cantidad)) {
+            return res.status(400).json({ success: false, message: 'Precio y cantidad deben ser números válidos' });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const llegada = new Date(fechaLlegada);
+        const vencimiento = new Date(fechaVencimiento);
+        const activo = vencimiento >= today;
+
+        if (llegada > vencimiento) {
+            return res.status(400).json({ success: false, message: 'La fecha de llegada no puede ser posterior a la fecha de vencimiento' });
+        }
+        if (vencimiento < today) {
+            return res.status(400).json({ success: false, message: 'La fecha de vencimiento no puede ser anterior a hoy' });
+        }
+
         const loteDatos = {
             producto,
             proveedor,
             precio,
             cantidad,
-            fechaLlegada,
-            fechaVencimiento
+            fechaLlegada: new Date(fechaLlegada),
+            fechaVencimiento: new Date(fechaVencimiento),
+            activo
         }
 
         const nuevoLote = new ModeloLote(loteDatos);

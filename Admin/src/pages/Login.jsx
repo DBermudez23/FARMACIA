@@ -22,7 +22,7 @@ function Login() {
     setCargando(true);
     try {
       const { data } = await axios.post(backendURL + '/api/admin/login', { mail, contrasena });
-      console.log(data)
+      //console.log(data)
       if (data.success) {
         localStorage.setItem('aToken', data.token);
         setAToken(data.token);

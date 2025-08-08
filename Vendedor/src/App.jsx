@@ -23,11 +23,11 @@ function App() {
         {/* Contenedor para scroll */}
         <div className="flex-1 overflow-y-auto p-4 scroll-smooth">
           <Routes>
-            <Route path='/admin-panel-principal' element={<PanelPrincipal />} />
-            <Route path='/admin-editar-perfil' element={<MiPerfil />} />
-            <Route path='/admin-editar-contraseña' element={<Contraseña />} />
-            <Route path='/admin-panel-ventas' element={<PanelVentas />} />
-            <Route path='/admin-facturacion' element={<Facturacion />} />
+            <Route path='/vendedor-panel-principal' element={<PanelPrincipal />} />
+            <Route path='/vendedor-editar-perfil' element={<MiPerfil />} />
+            <Route path='/vendedor-editar-contraseña' element={<Contraseña />} />
+            <Route path='/vendedor-panel-ventas' element={<PanelVentas />} />
+            <Route path='/vendedor-facturacion' element={<Facturacion />} />
           </Routes>
         </div>
       </div>

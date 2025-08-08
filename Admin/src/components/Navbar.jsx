@@ -11,7 +11,8 @@ function Navbar() {
   const {
     carritoCompras
   } = useContext(AppContext);
-  const {aToken, setAToken} = useContext(AdminContext);
+
+  const {token, setToken} = useContext(AdminContext);
 
   const logOut = () => {
     aToken && setAToken('');
