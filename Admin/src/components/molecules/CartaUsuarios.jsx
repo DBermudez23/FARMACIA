@@ -72,7 +72,7 @@ function CartaUsuarios({ usuario }) {
   };
 
   //Al hacer click en eliminar se mostrará la modal que solicitara la contraseña del administrador
-  const handleEliminarClick = (usuario) => {
+  const handleEliminarClick = () => {
     setMostrarModal(true);
   };
 

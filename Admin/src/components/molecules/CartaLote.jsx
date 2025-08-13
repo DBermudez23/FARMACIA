@@ -1,47 +1,85 @@
 import BotonEditar from "../atoms/BotonEditar";
 import BotonEliminar from "../atoms/BotonEliminar";
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import BotonConfirmarTablas from "../atoms/BotonConfirmarTablas";
 import BotonCancelarTablas from "../atoms/BotonCancelarTablas";
-import subir from '../../assets/Upload.svg';
+import { AppContext } from "../../context/AppContext";
+import { AdminContext } from "../../context/AdminContext";
+import axios from "axios";
+import ModalEliminar from "./ModalEliminar";
+import { toast } from "react-toastify";
 
 function CartaLote({ infoLote }) {
+  const { moneda } = useContext(AppContext);
   const {
-    producto,
-    proveedor,
-    presentacion,
-    laboratorio,
-    precioLote,
-    precioUnidad,
-    ingreso,
-    vencimiento,
-    stock,
-    idlote,
-    imagen: imagenInicial // ⚠️ Renombrado aquí para evitar conflicto con useState
-  } = infoLote;
-
-  const proveedores = [
-    "Proveedor 1",
-    "Proveedor 2",
-    "Proveedor 3",
-    "Proveedor 4"
-  ]
+    proveedores, obtenerProveedores,
+    laboratorios, obtenerLaboratorios,
+    presentaciones, obtenerPresentaciones,
+    productos, obtenerProductos,
+    aToken, setAToken,
+    backendURL
+  } = useContext(AdminContext);
 
   const [editar, setEditar] = useState(false);
-  const [imagenActual, setImagenActual] = useState(imagenInicial);
+  const [mostrarModal, setMostrarModal] = useState(false);
+
   const [datosEditados, setDatosEditados] = useState({
-    proveedor,
-    presentacion,
-    laboratorio,
-    precioLote,
-    precioUnidad,
-    idlote,
-    stock,
-    ingreso,
-    vencimiento,
+    proveedor: infoLote.proveedor || "",
+    precioLote: infoLote.precio ?? "",
+    idlote: infoLote._id || "",
+    stock: infoLote.cantidad ?? "",
+    ingreso: infoLote.fechaLlegada
+      ? format(new Date(infoLote.fechaLlegada), "yyyy-MM-dd")
+      : "",
+    vencimiento: infoLote.fechaVencimiento
+      ? format(new Date(infoLote.fechaVencimiento), "yyyy-MM-dd")
+      : "",
   });
+
+  const actualizarInfoLote = async () => {
+    const payload = {
+      proveedor: datosEditados.proveedor,
+      cantidad: datosEditados.stock,
+      fechaLlegada: datosEditados.ingreso,
+      fechaVencimiento: datosEditados.vencimiento,
+      precio: datosEditados.precioLote
+    };
+
+
+    try {
+      const { data } = await axios.put(
+        `${backendURL}/api/admin/editar-lote/${infoLote._id}`,
+        payload,
+        {
+          headers: {
+            aToken
+          }
+        }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        setEditar(false);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+      console.error(error);
+    }
+  };
+
+
+  useEffect(() => {
+    if (aToken) {
+      obtenerLaboratorios();
+      obtenerPresentaciones();
+      obtenerProductos();
+      obtenerProveedores();
+    }
+  }, [aToken])
 
   const handleChange = (e) => {
     setDatosEditados({
@@ -50,10 +88,52 @@ function CartaLote({ infoLote }) {
     });
   };
 
+  const handleCancelar = () => {
+    setEditar(false);
+    setDatosEditados({
+      proveedor: infoLote.proveedor || "",
+      precioLote: infoLote.precio ?? "",
+      idlote: infoLote._id || "",
+      stock: infoLote.cantidad ?? "",
+      ingreso: infoLote.fechaLlegada
+        ? format(new Date(infoLote.fechaLlegada), "yyyy-MM-dd")
+        : "",
+      vencimiento: infoLote.fechaVencimiento
+        ? format(new Date(infoLote.fechaVencimiento), "yyyy-MM-dd")
+        : "",
+    });
 
+  }
+
+  //Al hacer click en eliminar se mostrará la modal que solicitara la contraseña del administrador
+  const handleEliminarClick = () => {
+    setMostrarModal(true);
+  };
+
+  //Función que se ejecutara al introducir la contraseña en la modal
+  const eliminarLote = async (contraseñaAdmin) => {
+    try {
+      const { data } = await axios.delete(
+        `${backendURL}/api/admin/eliminar-lote/${infoLote._id}`,
+        {
+          headers: { aToken },
+          data: { contraseña: contraseñaAdmin }
+        }
+      );
+
+      if (data.success) {
+        toast.success('Lote eliminado correctamente');
+        setMostrarModal(false);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   const fechaHoy = new Date();
-  const fechaVencimiento = new Date(vencimiento);
+  const fechaVencimiento = new Date(infoLote.fechaVencimiento);
   const diasRestantes = (fechaVencimiento - fechaHoy) / (1000 * 60 * 60 * 24);
 
   let estado = "";
@@ -74,105 +154,88 @@ function CartaLote({ infoLote }) {
     bordeColor = "border-l-8 border-[#15D0EF]";
   }
 
-  const bgCard = "bg-white";
-  const textoColor = "text-gray-800";
-  const labelColor = "text-gray-600";
-
   return (
-    <div className={`relative w-full max-w-3xl min-h-[200px] ${bgCard} rounded-xl shadow-md p-5 flex gap-6 items-center ${bordeColor}`}>
-
-      {/* Badge de estado */}
+    <div className={`relative w-full max-w-4xl min-h-[200px] bg-white rounded-xl shadow-md p-5 flex gap-4 items-center ${bordeColor}`}>
+      {/* Badge */}
       <div className={`absolute top-0 left-0 rounded-br-xl px-3 py-1 text-xs font-bold ${colorBadge}`}>
         {estado}
       </div>
 
       {/* Imagen */}
-      {editar ? (
-        <label htmlFor="imagen" className="cursor-pointer group relative">
-          <div className="inline-block relative">
-            <img
-              className="w-28 h-28 object-contain rounded-md opacity-75 group-hover:opacity-70 transition"
-              src={imagenActual instanceof File ? URL.createObjectURL(imagenActual) : imagenActual}
-              alt="Vista previa"
-            />
-            <div className="absolute inset-0 flex items-center rounded-md justify-center bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition cursor-pointer">
-              <img src={subir} className="w-8 h-8" alt="Cambiar imagen" />
-            </div>
-          </div>
-          <input
-            type="file"
-            id="imagen"
-            hidden
-            accept="image/*"
-            onChange={(e) => {
-              if (e.target.files[0]) {
-                setImagenActual(e.target.files[0]);
-              }
-            }}
-          />
-        </label>
-      ) : (
-        <img
-          src={imagenInicial}
-          alt={producto}
-          className="w-28 h-28 object-contain rounded-md"
-        />
-      )}
-
+      <img
+        src={productos.find(prod => prod._id === infoLote.producto)?.imagen}
+        alt={'Producto'}
+        className="w-28 h-28 object-contain rounded-md"
+      />
 
       {/* Info */}
       <div className="flex flex-col justify-between text-sm w-full">
-        <h3 className={`text-lg font-bold uppercase ${textoColor}`}>{producto}</h3>
+        <h3 className="text-lg font-bold uppercase text-gray-800">
+          {productos.find(prod => prod._id === infoLote.producto)?.nombre}
+        </h3>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 mt-2">
-          <p className="max-w-[200px] truncate">
-            <span className={`font-semibold ${labelColor}`}>Proveedor:</span>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-2 gap-y-2 mt-2">
+          {/* Proveedor */}
+          <p className="max-w-[240px] truncate">
+            <span className="font-semibold text-gray-600">Proveedor:</span>{" "}
             {editar ? (
-              <select name="proveedor" id="proveedor" value={datosEditados.proveedor} onChange={handleChange}>
-                {proveedores.map((prov, idx) => (
-                  <option key={idx} value={prov}>{prov}</option>
+              <select
+                name="proveedor"
+                value={datosEditados.proveedor}
+                onChange={handleChange}
+              >
+                {proveedores.map((prov) => (
+                  <option key={prov._id} value={prov._id}>
+                    {prov.nombre}
+                  </option>
                 ))}
               </select>
             ) : (
-              proveedor
+              proveedores.find(prov => prov._id === infoLote.proveedor)?.nombre
             )}
           </p>
 
-          <p className="max-w-[200px] truncate">
-            <span className={`font-semibold ${labelColor}`}>Presentación:</span>
-            {presentacion}
+          {/* Presentación */}
+          <p className="max-w-[240px] truncate">
+            <span className="font-semibold text-gray-600">Presentación:</span>{" "}
+            {presentaciones.find(
+              pres => pres._id === productos.find(prod => prod._id === infoLote.producto)?.presentacion
+            )?.nombre}
           </p>
 
-          <p className="max-w-[200px] truncate">
-            <span className={`font-semibold ${labelColor}`}>Laboratorio:</span>
-            {laboratorio}
+          {/* Laboratorio */}
+          <p className="max-w-[240px] truncate">
+            <span className="font-semibold text-gray-600">Laboratorio:</span>{" "}
+            {laboratorios.find(
+              lab => lab._id === productos.find(prod => prod._id === infoLote.producto)?.laboratorio
+              )?.nombre}
           </p>
 
-          <div className="max-w-[200px]">
-            <span className={`font-semibold ${labelColor}`}>Precio lote:</span>
+          {/* Precio Lote */}
+          <div className="max-w-[240px]">
+            <span className="font-semibold text-gray-600">Precio lote:</span>{" "}
             {editar ? (
               <input
                 type="number"
                 name="precioLote"
-                value={precioLote}
+                value={datosEditados.precioLote}
                 onChange={handleChange}
                 className="border border-black bg-white rounded px-2 py-1 w-full text-sm text-gray-800"
               />
             ) : (
-              `$${precioLote}`
+              `${moneda}${infoLote.precio}`
             )}
           </div>
 
-          <p className="max-w-[200px] truncate">
-            <span className={`font-semibold ${labelColor}`}>Precio c/u:</span> ${precioUnidad}
+          {/* ID Lote */}
+          <p className="max-w-[240px] truncate">
+            <span className="font-semibold text-gray-600">ID lote:</span>{" "}
+            {infoLote._id.slice(0, 6)}
           </p>
 
-          <p className="max-w-[200px] truncate">
-            <span className={`font-semibold ${labelColor}`}>ID lote:</span> {idlote}
-          </p>
-
-          <p className="max-w-[200px]">
-            <span className={`font-semibold ${labelColor}`}>Stock:</span>{" "}
+          {/* Stock */}
+          <p className="max-w-[240px]">
+            <span className="font-semibold text-gray-600">Stock:</span>{" "}
             {editar ? (
               <input
                 type="number"
@@ -182,56 +245,67 @@ function CartaLote({ infoLote }) {
                 className="border border-black bg-white rounded px-2 py-1 w-full text-sm text-gray-800"
               />
             ) : (
-              stock
+              infoLote.cantidad
             )}
           </p>
 
-          <p className="max-w-[200px]">
-            <span className={`font-semibold ${labelColor}`}>Ingreso:</span>{" "}
+          {/* Fecha ingreso */}
+          <p className="max-w-[240px]">
+            <span className="font-semibold text-gray-600">Ingreso:</span>{" "}
             {editar ? (
               <input
                 type="date"
                 name="ingreso"
-                value={format(new Date(datosEditados.ingreso), "yyyy-MM-dd")}
+                value={datosEditados.ingreso}
                 onChange={handleChange}
                 className="border border-black bg-white rounded px-2 py-1 w-full text-sm text-gray-800"
               />
+            ) : infoLote.fechaLlegada ? (
+              format(new Date(infoLote.fechaLlegada), "yyyy-MMM-dd", { locale: es }).toUpperCase()
             ) : (
-              format(new Date(ingreso), "yyyy-MMM-dd", { locale: es }).toUpperCase()
+              "SIN FECHA"
             )}
           </p>
 
-          <p className="max-w-[200px]">
-            <span className={`font-semibold ${labelColor}`}>Vence:</span>{" "}
+          {/* Fecha vencimiento */}
+          <p className="max-w-[240px]">
+            <span className="font-semibold text-gray-600">Vence:</span>{" "}
             {editar ? (
               <input
                 type="date"
                 name="vencimiento"
-                value={format(new Date(datosEditados.vencimiento), "yyyy-MM-dd")}
+                value={datosEditados.vencimiento}
                 onChange={handleChange}
                 className="border border-black bg-white rounded px-2 py-1 w-full text-sm text-gray-800"
               />
+            ) : infoLote.fechaVencimiento ? (
+              format(new Date(infoLote.fechaVencimiento), "yyyy-MMM-dd", { locale: es }).toUpperCase()
             ) : (
-              format(fechaVencimiento, "yyyy-MMM-dd", { locale: es }).toUpperCase()
+              "SIN FECHA"
             )}
           </p>
-
         </div>
 
-
         {/* Botones */}
-        {editar
-          ? (
-            <div className="flex gap-3 justify-end mt-4">
-              <BotonConfirmarTablas onClick={() => setEditar(false)} />
-              <BotonCancelarTablas onClick={() => setEditar(false)} />
-            </div>
-          ) : <div className="flex gap-3 justify-end mt-4">
+        {editar ? (
+          <div className="flex gap-3 justify-end mt-4">
+            <BotonConfirmarTablas onClick={actualizarInfoLote} />
+            <BotonCancelarTablas onClick={handleCancelar} />
+          </div>
+        ) : (
+          <div className="flex gap-3 justify-end mt-4">
             <BotonEditar onClick={() => setEditar(!editar)} />
-            <BotonEliminar />
-          </div>}
-
+            <BotonEliminar onClick={() => handleEliminarClick(infoLote)} />
+          </div>
+        )}
       </div>
+
+      <ModalEliminar
+        visible={mostrarModal}
+        onClose={() => setMostrarModal(false)}
+        onConfirm={eliminarLote}
+        nombreElemento={productos.find(prod => prod._id === infoLote.producto)?.nombre || "este usuario"}
+      />
     </div>
   );
 }

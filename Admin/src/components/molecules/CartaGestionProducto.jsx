@@ -19,7 +19,7 @@ function CartaGestionProducto({ infoProducto }) {
         eliminarProducto,
         laboratorios, obtenerLaboratorios,
         tipos, obtenerTipos,
-        presentaciones, obtenerPresentaciones
+        presentaciones, obtenerPresentaciones,
     } = useContext(AdminContext);
 
 
@@ -78,11 +78,6 @@ function CartaGestionProducto({ infoProducto }) {
             obtenerTipos();
         }
     }, [aToken])
-
-
-
-
-
 
     return (
         <div className="w-64 min-h-[380px] p-4 rounded-xl border border-[#15D0EF] shadow-md bg-white flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">

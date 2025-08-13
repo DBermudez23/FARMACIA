@@ -645,37 +645,36 @@ const eliminarLote = async (req, res) => {
     }
 }
 
-//API para editar lote
+// API para editar lote
 const editarLote = async (req, res) => {
     try {
-
         const { id } = req.params;
-        //Unicamente se podran editar estos campos
-        const { proveedor, cantidad, fechaLlegada, fechaVencimiento } = req.body;
+        // Campos permitidos
+        const { proveedor, cantidad, fechaLlegada, fechaVencimiento, precio } = req.body;
 
-        //Verificamos que exista dicho lote
+        // Buscar lote
         const lote = await ModeloLote.findById(id);
         if (!lote) {
             return res.status(404).json({ success: false, message: 'Lote no encontrado' });
         }
 
-        //Actualizamos los campos
-        lote.proveedor = proveedor || lote.proveedor;
-        lote.cantidad = cantidad || lote.cantidad;
-        lote.fechaLlegada = fechaLlegada || lote.fechaLlegada;
-        lote.fechaVencimiento = fechaVencimiento || lote.fechaVencimiento;
+        // Actualizar solo si el valor fue enviado
+        if (proveedor !== undefined) lote.proveedor = proveedor;
+        if (cantidad !== undefined) lote.cantidad = cantidad;
+        if (fechaLlegada !== undefined) lote.fechaLlegada = fechaLlegada;
+        if (fechaVencimiento !== undefined) lote.fechaVencimiento = fechaVencimiento;
+        if (precio !== undefined) lote.precio = precio;
 
         await lote.save();
 
-        res.status(200).json({ success: true, message: 'Lote actualizado correctamente' });
+        res.status(200).json({success: true,message: 'Lote actualizado correctamente'});
 
     } catch (error) {
-
-        console.log(error);
+        console.error(error);
         res.status(500).json({ success: false, message: error.message });
-
     }
-}
+};
+
 
 // --------------------------------------TIPOS DE MEDICAMENTO---------------------------------------------
 
