@@ -36,13 +36,13 @@ function ModalEliminar({ visible, onClose, onConfirm, nombreElemento }) {
         <div className="flex justify-between gap-4 pt-4">
           <button
             onClick={handleCancel}
-            className="w-1/2 bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-md hover:bg-gray-400"
+            className="w-1/2 bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-md hover:bg-gray-400 cursor-pointer"
           >
             Cancelar
           </button>
           <button
             onClick={handleConfirm}
-            className="w-1/2 bg-red-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-600"
+            className="w-1/2 bg-red-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-600 cursor-pointer"
           >
             Confirmar
           </button>

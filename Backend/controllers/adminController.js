@@ -9,6 +9,7 @@ import ModeloPresentacion from '../models/ModeloPresentacion.js';
 import ModeloProducto from '../models/ModeloProducto.js';
 import ModeloProveedor from '../models/ModeloProveedor.js';
 import ModeloTipo from '../models/ModeloTipo.js';
+import ModeloCarrito from "../models/Carrito.js";
 import ModeloVenta from '../models/ModeloVenta.js';
 import mongoose from 'mongoose';
 
@@ -551,7 +552,49 @@ const obtenerLotes = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
 
     }
-}
+};
+
+// API para obtener lotes vencidos
+const obtenerLotesVencidos = async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Filtra lotes cuya fecha de vencimiento sea anterior a hoy
+        const lotesVencidos = await ModeloLote.find({
+            fechaVencimiento: { $lt: today }
+        });
+
+        res.status(200).json({ success: true, lotes: lotesVencidos });
+
+    } catch (error) {
+
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// API para obtener lotes a vencer en menos de 60 días
+const obtenerLotesPorVencer = async (req, res) => {
+    try {
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+
+        const fechaLimite = new Date(hoy);
+        fechaLimite.setDate(fechaLimite.getDate() + 60);
+
+        const lotesPorVencer = await ModeloLote.find({
+            fechaVencimiento: { $gte: hoy, $lte: fechaLimite }
+        });
+
+        res.status(200).json({ success: true, lotes: lotesPorVencer });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 //API para añadir un nuevo lote
 const nuevoLote = async (req, res) => {
@@ -628,7 +671,7 @@ const eliminarLote = async (req, res) => {
 
         //Para eliminar un lote es necesaria la contraseña del administrador
         const { contraseña } = req.body;
-        const { id } = req.parms;
+        const { id } = req.params;
 
         if (contraseña !== process.env.ADMIN_CONTRASENA) {
             return res.status(403).json({ success: false, message: 'Contraseña incorrecta' });
@@ -667,7 +710,7 @@ const editarLote = async (req, res) => {
 
         await lote.save();
 
-        res.status(200).json({success: true,message: 'Lote actualizado correctamente'});
+        res.status(200).json({ success: true, message: 'Lote actualizado correctamente' });
 
     } catch (error) {
         console.error(error);
@@ -793,6 +836,44 @@ const editarPresentacion = async (req, res) => {
     }
 }
 
+// -------------------------------------- CARRITO --------------------------------------------
+
+export const agregarAlCarrito = async (req, res) => {
+    try {
+        const { usuarioId } = req.params;
+        const { loteId, cantidad } = req.body;
+
+        // Verificar stock
+        const lote = await Lote.findById(loteId);
+        if (!lote) return res.status(404).json({ msg: "Lote no encontrado" });
+
+        if (cantidad > lote.stockDisponible) {
+            return res.status(400).json({ msg: "Cantidad solicitada mayor al stock disponible" });
+        }
+
+        // Buscar carrito del usuario
+        let carrito = await Carrito.findOne({ usuario: usuarioId });
+        if (!carrito) {
+            carrito = new Carrito({ usuario: usuarioId, items: [] });
+        }
+
+        // Ver si el lote ya está en el carrito
+        const itemExistente = carrito.items.find(i => i.lote.equals(loteId));
+        if (itemExistente) {
+            itemExistente.cantidad += cantidad;
+        } else {
+            carrito.items.push({ lote: loteId, cantidad });
+        }
+
+        await carrito.save();
+        res.json(carrito);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Error al agregar al carrito" });
+    }
+};
+
 // -------------------------------------- VENTAS---------------------------------------------
 
 //API para generar una nueva venta
@@ -885,7 +966,7 @@ export {
     loginAdmin,
     añadirVendedor, obtenerVendedores, eliminarVendedor, editarVendedor,
     obtenerProductos, nuevoProducto, eliminarProducto, editarProducto,
-    obtenerLotes, nuevoLote, eliminarLote, editarLote,
+    obtenerLotes, obtenerLotesVencidos, obtenerLotesPorVencer, nuevoLote, eliminarLote, editarLote,
     obtenerLaboratorios, nuevoLaboratorio, eliminarLaboratorio, editarLaboratorio,
     obtenerTipos, nuevoTipo,
     obtenerPresentaciones, nuevaPresentacion, eliminarPresentacion, editarPresentacion,

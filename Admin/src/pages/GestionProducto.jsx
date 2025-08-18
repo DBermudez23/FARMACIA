@@ -133,6 +133,10 @@ function GestionProducto() {
     }
   }, [aToken])
 
+  useEffect(() => {
+    obtenerProductos();
+  }, [productos])
+
   return (
     <div className='w-full flex flex-wrap justify-center overflow-y-scroll'>
       <div className="max-w-6xl w-full px-4 sm:px-8 py-8">

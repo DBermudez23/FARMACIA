@@ -7,7 +7,7 @@ import {
     obtenerLaboratorios,nuevoLaboratorio, eliminarLaboratorio,editarLaboratorio,
     obtenerTipos, nuevoTipo,
     obtenerPresentaciones,nuevaPresentacion, eliminarPresentacion, editarPresentacion,
-    obtenerLotes, nuevoLote, eliminarLote, editarLote,
+    obtenerLotes, obtenerLotesPorVencer, obtenerLotesVencidos, nuevoLote, eliminarLote, editarLote,
     nuevaVenta
 } from '../controllers/AdminController.js';
 import upload from '../middlewares/multer.js';
@@ -47,6 +47,8 @@ adminRouter.delete('/eliminar-proveedor/:id', authAdmin, eliminarProveedor);
 adminRouter.put('/editar-proveedor/:id', authAdmin, editarProveedor);
 //Lotes
 adminRouter.get('/obtener-lotes', authAdmin, obtenerLotes);
+adminRouter.get('/api/admin/obtener-lotes-vencidos', authAdmin, obtenerLotesVencidos);
+adminRouter.get('/api/admin/obtener-lotes-por-vencer', authAdmin, obtenerLotesPorVencer);
 adminRouter.post('/nuevo-lote', authAdmin, nuevoLote);
 adminRouter.delete('/eliminar-lote/:id', authAdmin, eliminarLote);
 adminRouter.put('/editar-lote/:id', authAdmin, editarLote);

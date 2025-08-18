@@ -14,6 +14,8 @@ const AdminContextProvider = (props) => {
     const [presentaciones, setPresentaciones] = useState([]);
     const [tipos, setTipos] = useState([]);
     const [lotes, setLotes] = useState([]);
+    const [lotesVencidos, setLotesVencidos] = useState([]);
+    const [lotesPorVencer, setLotesPorVencer] = useState([]);
     const [ventas, setVentas] = useState([]);
 
     const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -47,6 +49,36 @@ const AdminContextProvider = (props) => {
                 setLotes(data.lotes)
             }
             
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
+    const obtenerLotesVencidos = async () => {
+        try {
+
+            const {data} = await axios.get(backendURL + '/api/admin/obtener-lotes-vencidos', {headers: {aToken}});
+            if (data.success) {
+                setLotesVencidos(data.lotes);
+            } else {
+                toast.error(data.message);
+            }
+
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
+    const obtenerLotesPorVencer = async () => {
+        try {
+
+            const {data} = await axios.get(backendURL + '/api/admin/obtener-lotes-por-vencer', {headers: {aToken}});
+            if (data.success) {
+                setLotesPorVencer(data.lotes);
+            } else {
+                toast.error(data.message);
+            }
+
         } catch (error) {
             toast.error(error.message);
         }
@@ -145,7 +177,7 @@ const AdminContextProvider = (props) => {
         vendedores, obtenerVendedores, setVendedores,
         tipos, obtenerTipos,
         presentaciones, obtenerPresentaciones,
-        lotes, obtenerLotes
+        lotes, obtenerLotes, lotesVencidos, lotesPorVencer, obtenerLotesVencidos, obtenerLotesPorVencer
     }
 
     return (

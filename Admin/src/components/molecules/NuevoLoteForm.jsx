@@ -58,7 +58,6 @@ function NuevoLoteForm({ setNuevoLote }) {
                 setFechaLlegada('');
                 setFechaVencimiento('');
                 setPrecio('');
-                setInfoAdicional('');
             } else {
                 toast.error(data.message);
             }

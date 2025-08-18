@@ -122,13 +122,14 @@ function CartaLote({ infoLote }) {
       );
 
       if (data.success) {
-        toast.success('Lote eliminado correctamente');
         setMostrarModal(false);
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      toast.success('Lote eliminado correctamente');
     }
   };
 

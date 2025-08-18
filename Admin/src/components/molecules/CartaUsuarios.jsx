@@ -88,7 +88,7 @@ function CartaUsuarios({ usuario }) {
       );
 
       if (data.success) {
-        toast.success('vendedor eliminado correctamente');
+        toast.success(data.message);
         setMostrarModal(false);
       } else {
         toast.error(data.message);
