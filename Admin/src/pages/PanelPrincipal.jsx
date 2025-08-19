@@ -77,13 +77,16 @@ const medicamentos = [
 
 function PanelPrincipal() {
 
-  const {aToken, obtenerProductos, productos} = useContext(AdminContext);
+  const {
+      aToken, 
+      lotes, obtenerLotes
+        } = useContext(AdminContext);
 
   useEffect(() => {
     if (aToken) {
-      obtenerProductos();
+      obtenerLotes();
     }
-  }, [aToken])
+  }, [])
 
   return (
     <div className="w-full flex flex-wrap justify-center">
@@ -105,14 +108,13 @@ function PanelPrincipal() {
           <TablaMedicamentos medicamentos={medicamentos} />
         </div>
 
-        {/* PRODUCTOS 
+        {/* PRODUCTOS */}
         <div className="my-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center">
-          {productos.map((producto, i) => (
-            <CartaProducto key={i} infoProducto={producto} />
+          {lotes.map((lote, i) => (
+            <CartaProducto key={i} infoProducto={lote} />
           ))}
         </div>
-        */}
-
+      
 
       </div>
 

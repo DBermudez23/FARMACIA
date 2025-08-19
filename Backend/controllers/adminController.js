@@ -9,7 +9,7 @@ import ModeloPresentacion from '../models/ModeloPresentacion.js';
 import ModeloProducto from '../models/ModeloProducto.js';
 import ModeloProveedor from '../models/ModeloProveedor.js';
 import ModeloTipo from '../models/ModeloTipo.js';
-import ModeloCarrito from "../models/Carrito.js";
+import ModeloCarrito from "../models/ModeloCarrito.js";
 import ModeloVenta from '../models/ModeloVenta.js';
 import mongoose from 'mongoose';
 
@@ -844,17 +844,17 @@ export const agregarAlCarrito = async (req, res) => {
         const { loteId, cantidad } = req.body;
 
         // Verificar stock
-        const lote = await Lote.findById(loteId);
+        const lote = await ModeloLote.findById(loteId);
         if (!lote) return res.status(404).json({ msg: "Lote no encontrado" });
 
         if (cantidad > lote.stockDisponible) {
-            return res.status(400).json({ msg: "Cantidad solicitada mayor al stock disponible" });
+            return res.status(400).json({success:false,message:"Cantidad solicitada mayor al stock disponible"});
         }
 
         // Buscar carrito del usuario
-        let carrito = await Carrito.findOne({ usuario: usuarioId });
+        let carrito = await ModeloCarrito.findOne({ usuario: usuarioId });
         if (!carrito) {
-            carrito = new Carrito({ usuario: usuarioId, items: [] });
+            carrito = new ModeloCarrito({ usuario: usuarioId, items: [] });
         }
 
         // Ver si el lote ya está en el carrito

@@ -6,7 +6,16 @@ import { useEffect } from "react";
 
 
 function CartaProducto({ infoProducto }) {
-    
+
+    /*
+    LO QUE SE RENDERIZA EN ESTE COMPONENTE SON LOS PRODUCTOS EXISTENTES EN EL INVENTARIO
+    ES DECIR QUE EXISTA UN LOTE ASOCIADO A DICHO PRODUCTO QUE CUMPLA CON:
+
+        - PRODUCTOS DISPONIBLES (STOCK).
+        - PRODUCTOS QUE NO HAYAN PASADO SU FECHA DE VENCIMIENTO (LOS QUE ESTAN CON RIESGO DE VENCER DEBEN SER PRIORIDAD).
+
+    */
+
     const {
         moneda,
     } = useContext(AppContext);
@@ -15,6 +24,7 @@ function CartaProducto({ infoProducto }) {
         laboratorios, obtenerLaboratorios,
         presentaciones, obtenerPresentaciones,
         tipos, obtenerTipos,
+        productos, obtenerProductos,
         aToken
     } = useContext(AdminContext);
 
@@ -23,46 +33,53 @@ function CartaProducto({ infoProducto }) {
             obtenerLaboratorios();
             obtenerPresentaciones();
             obtenerTipos();
+            obtenerProductos();
         }
-    })
+    }, [aToken])
 
     return (
         <div className="w-64 h-[380px] p-4 rounded-xl border border-[#15D0EF] shadow-md bg-white flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
             <img
-                src={infoProducto.imagen}
-                alt={infoProducto.producto}
+                src={productos.find(prod => prod._id === infoProducto.producto)?.imagen}
+                alt={productos.find(prod => prod._id === infoProducto.producto)?.nombre}
                 className="w-32 h-32 object-contain mx-auto"
             />
 
             <p className="text-center mt-2 font-semibold text-[#15D0EF] truncate w-full max-w-[220px]">
-                {infoProducto.nombre}
+                {productos.find(prod => prod._id === infoProducto.producto)?.nombre}
             </p>
 
             <div className="flex flex-col items-start text-left mt-1 space-y-1 overflow-hidden">
 
                 <p className="text-sm text-gray-600 w-full max-w-[220px] truncate">
-                    <span className="font-bold">ID LOTE:</span> {infoProducto._id.slice(0,6)}
+                    <span className="font-bold">ID LOTE: </span>{infoProducto._id.slice(0, 6)}
                 </p>
 
                 <p className="text-sm text-gray-600 w-full max-w-[220px] truncate">
-                    <span className="font-bold">LABORATORIO:</span> 
-                    {laboratorios.find((lab) => lab._id === infoProducto.laboratorio)?.nombre || 'No disponible'}
+                    <span className="font-bold">LABORATORIO: </span>
+                    {laboratorios.find(
+                        lab => lab._id === productos.find(prod => prod._id === infoProducto.producto)?.laboratorio
+                    )?.nombre}
                 </p>
 
                 <p className="text-sm text-gray-600 w-full max-w-[220px] truncate">
-                    <span className="font-bold">TIPO:</span> 
-                    {tipos.find((tipo) => tipo._id === infoProducto.tipo)?.nombre || 'No disponible'}
+                    <span className="font-bold">TIPO: </span>
+                    {tipos.find(
+                        tipo => tipo._id === productos.find(prod => prod._id === infoProducto.producto)?.tipo
+                    )?.nombre}
                 </p>
 
                 <p className="text-sm text-gray-600 w-full max-w-[220px] truncate">
                     <span className="font-bold">PRESENTACIÓN:</span>
-                    {presentaciones.find((pres) => pres._id === infoProducto.presentacion)?.nombre || 'No disponible'}
+                    {presentaciones.find(
+                        pres => pres._id === productos.find(prod => prod._id === infoProducto.producto)?.presentacion
+                    )?.nombre}
                 </p>
             </div>
 
             <div className="flex justify-between items-center">
                 <p className="text-lg font-bold text-green-600 mt-2">
-                    {moneda} {infoProducto.precio}
+                    {moneda} {productos.find(prod => prod._id === infoProducto.producto)?.precio}
                 </p>
                 <BotonCarrito />
             </div>
