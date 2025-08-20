@@ -6,85 +6,23 @@ import { AdminContext } from "../context/AdminContext";
 import { useEffect } from "react";
 
 
-const medicamentos = [
-  {
-    codigo: "0156",
-    producto: "AMOXICILINA 500mg",
-    cantidad: "120 CAJAS",
-    laboratorio: "GENFAR",
-    presentacion: "CAJA X 10 CÁPSULAS",
-    proveedor: "DISTRIBUIDORA ANDINA",
-    vencimiento: "2024-08-10",
-  },
-  {
-    codigo: "0327",
-    producto: "IBUPROFENO 400mg",
-    cantidad: "100 CAJAS",
-    laboratorio: "SYNTHESIS",
-    presentacion: "CAJA X 20 TABLETAS",
-    proveedor: "FARMASUMINISTROS",
-    vencimiento: "2025-01-10",
-  },
-  {
-    codigo: "1785",
-    producto: "SALBUTAMOL 100mcg",
-    cantidad: "30 UNIDADES",
-    laboratorio: "BAYER",
-    presentacion: "INHALADOR",
-    proveedor: "INSUMOS DEL CAFÉ",
-    vencimiento: "2025-08-18",
-  },
-  {
-    codigo: "7432",
-    producto: "OMEPRAZOL 20mg",
-    cantidad: "75 CAJAS",
-    laboratorio: "ABBOT",
-    presentacion: "CAJA X 14 CÁPSULAS",
-    proveedor: "DISMÉDICA",
-    vencimiento: "2025-10-30",
-  },
-  {
-    codigo: "1975",
-    producto: "LORATADINA 10mg",
-    cantidad: "60 CAJAS",
-    laboratorio: "TECNOQUÍMICAS",
-    presentacion: "CAJA X 10 TABLETAS",
-    proveedor: "DROGUERÍA TOTAL",
-    vencimiento: "2025-12-15",
-  },
-  {
-    codigo: "1258",
-    producto: "DICLOFENACO 50mg",
-    cantidad: "65 CAJAS",
-    laboratorio: "BIOGÉNESIS",
-    presentacion: "CAJA X 10 TABLETAS",
-    proveedor: "FARMAEXPRESS",
-    vencimiento: "2025-11-25",
-  },
-  {
-    codigo: "9866",
-    producto: "ENALAPRIL 10mg",
-    cantidad: "80 CAJAS",
-    laboratorio: "GENFAR",
-    presentacion: "CAJA X 20 TABLETAS",
-    proveedor: "MEDIPHARMA LTDA",
-    vencimiento: "2025-09-12",
-  }
-
-]; 
-
-
-
 function PanelPrincipal() {
 
   const {
-      aToken, 
-      lotes, obtenerLotes
-        } = useContext(AdminContext);
+    aToken,
+    lotes, obtenerLotes,
+    lotesVencidos, obtenerLotesVencidos,
+    lotesPorVencer, obtenerLotesPorVencer
+  } = useContext(AdminContext);
+
+  // Lista combinada de riesgo
+  const lotesRiesgoTotal = [...lotesVencidos, ...lotesPorVencer];
 
   useEffect(() => {
     if (aToken) {
       obtenerLotes();
+      obtenerLotesPorVencer();
+      obtenerLotesVencidos();
     }
   }, [aToken])
 
@@ -105,7 +43,7 @@ function PanelPrincipal() {
         </h2>
 
         <div className="overflow-x-auto">
-          <TablaMedicamentos medicamentos={medicamentos} />
+          <TablaMedicamentos medicamentos={lotesRiesgoTotal} />
         </div>
 
         {/* PRODUCTOS */}
@@ -114,7 +52,7 @@ function PanelPrincipal() {
             <CartaProducto key={i} infoProducto={lote} />
           ))}
         </div>
-      
+
 
       </div>
 

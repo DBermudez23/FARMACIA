@@ -1,6 +1,47 @@
+import { useContext, useEffect } from "react";
+import { AdminContext } from "../../context/AdminContext";
 
 
 const TablaMedicamentos = ({ medicamentos }) => {
+
+    const {
+        aToken,
+        proveedores, obtenerProveedores,
+        productos,
+        laboratorios,
+        presentaciones
+    } = useContext(AdminContext);
+
+    const nombreMedicamento = (medicamento) => {
+        return productos.find(prod => prod._id === medicamento.producto)?.nombre;
+    }
+
+    const nombreProveedor = (medicamento) => {
+        return proveedores.find(prov => prov._id === medicamento.proveedor)?.nombre;
+    }
+
+    const nombrePresentacion = (medicamento) => {
+        return (
+            presentaciones.find(
+                pres => pres._id === productos.find(prod => prod._id === medicamento.producto)?.presentacion
+            )?.nombre
+        )
+    }
+
+    const laboratorioNombre = (medicamento) => {
+        return (
+            laboratorios.find(
+                lab => lab._id === productos.find(prod => prod._id === medicamento.producto)?.laboratorio
+            )?.nombre
+        )
+    }
+
+    useEffect(() => {
+        obtenerProveedores();
+    }, [aToken])
+
+    console.log(proveedores)
+
     return (
         <div className="overflow-hidden rounded-xl border">
             <table className="min-w-full table-auto">
@@ -29,13 +70,27 @@ const TablaMedicamentos = ({ medicamentos }) => {
                                 key={idx}
                                 className={`${filaClase} text-center text-sm`}
                             >
-                                <td className={`border-r border-t px-2 py-1 ${isLast ? 'rounded-bl-xl' : ''}`}>{med.codigo}</td>
-                                <td className="border-r border-t px-2 py-1">{med.producto}</td>
-                                <td className="border-r border-t px-2 py-1">{med.cantidad}</td>
-                                <td className="border-r border-t px-2 py-1">{med.laboratorio}</td>
-                                <td className="border-r border-t px-2 py-1">{med.presentacion}</td>
-                                <td className="border-r border-t px-2 py-1">{med.proveedor}</td>
-                                <td className={`border-t px-2 py-1 ${isLast ? 'rounded-br-xl' : ''}`}>{med.vencimiento}</td>
+                                <td className={`border-r border-t px-2 py-1 ${isLast ? 'rounded-bl-xl' : ''}`}>
+                                    {med._id.slice(0, 6)}
+                                </td>
+                                <td className="border-r border-t px-2 py-1">
+                                    {nombreMedicamento(med)}
+                                </td>
+                                <td className="border-r border-t px-2 py-1">
+                                    {med.cantidad}
+                                </td>
+                                <td className="border-r border-t px-2 py-1">
+                                    {laboratorioNombre(med)}
+                                </td>
+                                <td className="border-r border-t px-2 py-1">
+                                    {nombrePresentacion(med)}
+                                </td>
+                                <td className="border-r border-t px-2 py-1">
+                                    {nombreProveedor(med)}
+                                </td>
+                                <td className={`border-t px-2 py-1 ${isLast ? 'rounded-br-xl' : ''}`}>
+                                    {new Date(med.fechaVencimiento).toLocaleDateString()}
+                                </td>
                             </tr>
                         );
                     })}

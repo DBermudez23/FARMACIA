@@ -557,12 +557,9 @@ const obtenerLotes = async (req, res) => {
 // API para obtener lotes vencidos
 const obtenerLotesVencidos = async (req, res) => {
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        // Filtra lotes cuya fecha de vencimiento sea anterior a hoy
+        // Filtra lotes cuyo estado activo sea false
         const lotesVencidos = await ModeloLote.find({
-            fechaVencimiento: { $lt: today }
+            active : false
         });
 
         res.status(200).json({ success: true, lotes: lotesVencidos });

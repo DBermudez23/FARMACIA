@@ -115,12 +115,12 @@ const TablaCarrito = ({ carrito = [] }) => {
                 </table>
             </div>
 
-            <div className="flex justify-center items-center gap-10 pt-4 mt-6">
+            <div className="flex justify-center items-center gap-8 pt-4 mt-6">
                 <BotonCancelar />
                 <BotonConfirmar />
                 <div className="text-right">
                     <h2 className="font-semibold">TOTAL VENTA:</h2>
-                    <p className="text-lg text-green-500">$ {totalVenta}</p>
+                    <p className="text-lg text-green-500">$ {totalVenta.toFixed(2)}</p>
                 </div>
             </div>
         </>

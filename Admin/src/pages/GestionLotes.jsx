@@ -20,12 +20,6 @@ function GestionLotes() {
   const [verTodo, setVerTodo] = useState(false);
   const [nuevoLote, setNuevoLote] = useState(false);
 
-  // Lista combinada de riesgo
-  const lotesRiesgoTotal = [...lotesVencidos, ...lotesPorVencer];
-  const lotesMostrados = verTodo
-    ? lotesRiesgoTotal
-    : lotesRiesgoTotal.slice(0, 2);
-
   useEffect(() => {
     if (aToken) {
       obtenerLotes();
@@ -33,6 +27,13 @@ function GestionLotes() {
       obtenerLotesPorVencer();
     }
   }, [aToken]);
+
+  // Lista combinada de riesgo
+  const lotesRiesgoTotal = [...lotesVencidos, ...lotesPorVencer];
+  const lotesMostrados = verTodo
+    ? lotesRiesgoTotal
+    : lotesRiesgoTotal.slice(0, 2);
+
 
   return (
     <div className="w-full flex flex-wrap justify-center">
@@ -64,6 +65,7 @@ function GestionLotes() {
                 ))}
               </div>
 
+              {/* Botón ver más/menos */}
               {lotesRiesgoTotal.length > 2 && (
                 <button
                   onClick={() => setVerTodo((prev) => !prev)}
