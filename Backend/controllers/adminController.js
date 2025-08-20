@@ -836,51 +836,12 @@ const editarPresentacion = async (req, res) => {
     }
 }
 
-// -------------------------------------- CARRITO --------------------------------------------
-
-export const agregarAlCarrito = async (req, res) => {
-    try {
-        const { usuarioId } = req.params;
-        const { loteId, cantidad } = req.body;
-
-        // Verificar stock
-        const lote = await ModeloLote.findById(loteId);
-        if (!lote) return res.status(404).json({ msg: "Lote no encontrado" });
-
-        if (cantidad > lote.stockDisponible) {
-            return res.status(400).json({success:false,message:"Cantidad solicitada mayor al stock disponible"});
-        }
-
-        // Buscar carrito del usuario
-        let carrito = await ModeloCarrito.findOne({ usuario: usuarioId });
-        if (!carrito) {
-            carrito = new ModeloCarrito({ usuario: usuarioId, items: [] });
-        }
-
-        // Ver si el lote ya está en el carrito
-        const itemExistente = carrito.items.find(i => i.lote.equals(loteId));
-        if (itemExistente) {
-            itemExistente.cantidad += cantidad;
-        } else {
-            carrito.items.push({ lote: loteId, cantidad });
-        }
-
-        await carrito.save();
-        res.json(carrito);
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: "Error al agregar al carrito" });
-    }
-};
 
 // -------------------------------------- VENTAS---------------------------------------------
 
-//API para generar una nueva venta
+// API para generar una nueva venta
 const nuevaVenta = async (req, res) => {
     try {
-
-        //PRODUCTOS: Array de distintos productos
         const { productos, nombreCliente, DNICliente, idVendedor, metodoPago } = req.body;
 
         if (!productos || !nombreCliente || !DNICliente || !idVendedor || !metodoPago) {
@@ -891,53 +852,56 @@ const nuevaVenta = async (req, res) => {
         const detalleProductos = [];
 
         for (const item of productos) {
-            const { producto, cantidad } = item;
+            const { producto: productoId, cantidad } = item;
 
-            if (!mongoose.Types.ObjectId.isValid(producto)) {
-                return res.status(400).json({ success: false, message: `ID de producto inválido: ${producto}` });
+            if (!mongoose.Types.ObjectId.isValid(productoId)) {
+                return res.status(400).json({ success: false, message: `ID de producto inválido: ${productoId}` });
             }
 
-            // Buscar lotes válidos (no vencidos), ordenados por fecha de vencimiento
+            // Buscar el producto para obtener su precio de venta
+            const productoDB = await ModeloProducto.findById(productoId);
+            if (!productoDB) {
+                return res.status(404).json({ success: false, message: "Producto no encontrado" });
+            }
+
+            // Buscar lotes disponibles (no vencidos, con stock > 0), ordenados por fecha de vencimiento
             const lotes = await ModeloLote.find({
-                producto,
+                producto: productoId,
                 fechaVencimiento: { $gt: new Date() },
-                cantidad: { $gt: 0 }
+                $expr: { $gt: ["$cantidad", "$cantidadVendida"] } // stockDisponible > 0
             }).sort({ fechaVencimiento: 1 });
 
             if (lotes.length === 0) {
-                return res.status(400).json({ success: false, message: `No hay lotes disponibles para el producto solicitado.` });
+                return res.status(400).json({ success: false, message: `No hay lotes disponibles para ${productoDB.nombre}` });
             }
 
             let cantidadPendiente = cantidad;
-            const subDetalle = [];
 
             for (const lote of lotes) {
                 if (cantidadPendiente === 0) break;
 
-                const cantidadUsada = Math.min(cantidadPendiente, lote.cantidad);
+                const stockDisponible = lote.cantidad - lote.cantidadVendida;
+                const cantidadUsada = Math.min(cantidadPendiente, stockDisponible);
 
-                subDetalle.push({
+                // Agregar detalle del producto a la venta
+                detalleProductos.push({
+                    producto: productoDB._id,
                     lote: lote._id,
                     cantidad: cantidadUsada,
-                    precioUnitario: lote.precio
+                    precioUnitario: productoDB.precio // ✅ Precio de venta
                 });
 
-                // Restar stock del lote
-                lote.cantidad -= cantidadUsada;
+                // Actualizar stock del lote
+                lote.cantidadVendida += cantidadUsada;
                 await lote.save();
 
-                total += cantidadUsada * lote.precio;
+                total += cantidadUsada * productoDB.precio;
                 cantidadPendiente -= cantidadUsada;
             }
 
             if (cantidadPendiente > 0) {
-                return res.status(400).json({ success: false, message: `Stock insuficiente para el producto.` });
+                return res.status(400).json({ success: false, message: `Stock insuficiente para ${productoDB.nombre}` });
             }
-
-            detalleProductos.push({
-                producto,
-                lotes: subDetalle
-            });
         }
 
         // Crear la venta

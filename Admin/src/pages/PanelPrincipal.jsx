@@ -86,7 +86,7 @@ function PanelPrincipal() {
     if (aToken) {
       obtenerLotes();
     }
-  }, [])
+  }, [aToken])
 
   return (
     <div className="w-full flex flex-wrap justify-center">

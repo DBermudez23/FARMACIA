@@ -3,6 +3,7 @@ import BotonCarrito from "../atoms/BotonCarrito";
 import { AppContext } from "../../context/AppContext";
 import { AdminContext } from "../../context/AdminContext";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 
 function CartaProducto({ infoProducto }) {
@@ -18,6 +19,7 @@ function CartaProducto({ infoProducto }) {
 
     const {
         moneda,
+        carritoCompras, setCarritoCompras
     } = useContext(AppContext);
 
     const {
@@ -37,14 +39,29 @@ function CartaProducto({ infoProducto }) {
         }
     }, [aToken])
 
+    /*useEffect(() => {
+        console.log(carritoCompras)
+    }, [carritoCompras])*/
+
+    const añadirAlCarrito = (productoSeleccionado) => {
+        try {
+            setCarritoCompras((prev) => [...prev, productoSeleccionado]);
+            toast.success("Producto añadido al carrito");
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
+
     return (
         <div className="w-64 h-[380px] p-4 rounded-xl border border-[#15D0EF] shadow-md bg-white flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
+            {/* IMAGEN */}
             <img
                 src={productos.find(prod => prod._id === infoProducto.producto)?.imagen}
                 alt={productos.find(prod => prod._id === infoProducto.producto)?.nombre}
                 className="w-32 h-32 object-contain mx-auto"
             />
 
+            {/* NOMBRE */}
             <p className="text-center mt-2 font-semibold text-[#15D0EF] truncate w-full max-w-[220px]">
                 {productos.find(prod => prod._id === infoProducto.producto)?.nombre}
             </p>
@@ -55,6 +72,7 @@ function CartaProducto({ infoProducto }) {
                     <span className="font-bold">ID LOTE: </span>{infoProducto._id.slice(0, 6)}
                 </p>
 
+                {/* LABORATORIO */}
                 <p className="text-sm text-gray-600 w-full max-w-[220px] truncate">
                     <span className="font-bold">LABORATORIO: </span>
                     {laboratorios.find(
@@ -62,6 +80,7 @@ function CartaProducto({ infoProducto }) {
                     )?.nombre}
                 </p>
 
+                {/* TIPO */}
                 <p className="text-sm text-gray-600 w-full max-w-[220px] truncate">
                     <span className="font-bold">TIPO: </span>
                     {tipos.find(
@@ -69,8 +88,9 @@ function CartaProducto({ infoProducto }) {
                     )?.nombre}
                 </p>
 
+                {/* PRESENTACIÓN */}
                 <p className="text-sm text-gray-600 w-full max-w-[220px] truncate">
-                    <span className="font-bold">PRESENTACIÓN:</span>
+                    <span className="font-bold">PRESENTACIÓN: </span>
                     {presentaciones.find(
                         pres => pres._id === productos.find(prod => prod._id === infoProducto.producto)?.presentacion
                     )?.nombre}
@@ -81,7 +101,8 @@ function CartaProducto({ infoProducto }) {
                 <p className="text-lg font-bold text-green-600 mt-2">
                     {moneda} {productos.find(prod => prod._id === infoProducto.producto)?.precio}
                 </p>
-                <BotonCarrito />
+                <BotonCarrito onClick={() => añadirAlCarrito(infoProducto)} />
+
             </div>
         </div>
 
