@@ -38,15 +38,13 @@ function CartaProducto({ infoProducto }) {
             obtenerProductos();
         }
     }, [aToken])
-
-    /*useEffect(() => {
+    useEffect(() => {
         console.log(carritoCompras)
-    }, [carritoCompras])*/
+    }, [carritoCompras])
 
     const añadirAlCarrito = (productoSeleccionado) => {
         try {
             setCarritoCompras((prev) => [...prev, productoSeleccionado]);
-            toast.success("Producto añadido al carrito");
         } catch (error) {
             toast.error(error.message);
         }

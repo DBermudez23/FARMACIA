@@ -64,6 +64,8 @@ function NuevoLoteForm({ setNuevoLote }) {
 
         } catch (error) {
             toast.error(error.message);
+        } finally {
+            setNuevoLote(false);
         }
     }
 

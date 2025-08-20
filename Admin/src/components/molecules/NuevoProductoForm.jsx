@@ -79,6 +79,8 @@ function NuevoProductoForm({ setNuevoProducto }) {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setNuevoProducto(false);
     }
   };
 
