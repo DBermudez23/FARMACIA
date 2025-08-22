@@ -23,6 +23,7 @@ function PanelPrincipal() {
       obtenerLotes();
       obtenerLotesPorVencer();
       obtenerLotesVencidos();
+      console.log(lotesVencidos);
     }
   }, [aToken])
 

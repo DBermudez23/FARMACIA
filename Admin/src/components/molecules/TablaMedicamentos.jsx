@@ -40,7 +40,7 @@ const TablaMedicamentos = ({ medicamentos }) => {
         obtenerProveedores();
     }, [aToken])
 
-    console.log(proveedores)
+    //console.log(medicamentos);
 
     return (
         <div className="overflow-hidden rounded-xl border">
@@ -59,10 +59,15 @@ const TablaMedicamentos = ({ medicamentos }) => {
                 <tbody>
                     {medicamentos.map((med, idx) => {
                         const hoy = new Date();
-                        const vencimiento = new Date(med.vencimiento);
+                        const vencimiento = new Date(med.fechaVencimiento);
                         const diasRestantes = (vencimiento - hoy) / (1000 * 60 * 60 * 24);
 
-                        const filaClase = diasRestantes < 60 ? "bg-[#F28B82]" : "bg-[#FDE68A]";
+                        let filaClase = "";
+                        if (diasRestantes <= 0) {
+                            filaClase = "bg-[#F28B82]"; // rojo → vencido
+                        } else if (diasRestantes <= 60) {
+                            filaClase = "bg-[#FDE68A]"; // amarillo → por vencer
+                        }
                         const isLast = idx === medicamentos.length - 1;
 
                         return (

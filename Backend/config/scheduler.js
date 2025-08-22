@@ -5,7 +5,7 @@ export function startLoteScheduler() {
   cron.schedule('0 0 * * *', async () => {
     try {
       console.log('Ejecutando tarea programada para actualizar lotes...');
-      
+
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -19,4 +19,5 @@ export function startLoteScheduler() {
       console.error('Error en la tarea de actualización de lotes:', error);
     }
   });
+
 }
