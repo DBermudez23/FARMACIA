@@ -10,11 +10,11 @@ function Navbar() {
 
   const {carritoCompras} = useContext(AppContext);
 
-  const {token} = useContext(VendedorContext);
+  const {token, setToken} = useContext(VendedorContext);
 
   const logOut = () => {
-    aToken && setAToken('');
-    aToken && localStorage.removeItem('aToken');
+    token && setToken('');
+    token && localStorage.removeItem('token');
   }
 
   return (

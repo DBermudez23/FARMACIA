@@ -1,15 +1,15 @@
 import express from 'express';
-import { 
-    loginAdmin, 
-    obtenerVendedores, añadirVendedor, eliminarVendedor, editarVendedor,
-    obtenerProductos, nuevoProducto,eliminarProducto, editarProducto,
-    obtenerProveedores, nuevoProveedor, eliminarProveedor, editarProveedor,
-    obtenerLaboratorios,nuevoLaboratorio, eliminarLaboratorio,editarLaboratorio,
+import {  
     obtenerTipos, nuevoTipo,
     obtenerPresentaciones,nuevaPresentacion, eliminarPresentacion, editarPresentacion,
-    obtenerLotes, obtenerLotesPorVencer, obtenerLotesVencidos, nuevoLote, eliminarLote, editarLote,
     nuevaVenta
-} from '../controllers/AdminController.js';
+} from '../controllers/adminController.js';
+import { loginAdmin } from '../controllers/admin/login.js';
+import { obtenerVendedores, añadirVendedor, eliminarVendedor, editarVendedor } from '../controllers/admin/gestionVendedores.js';
+import { obtenerProductos, nuevoProducto, eliminarProducto, editarProducto } from '../controllers/admin/gestionProductos.js';
+import { obtenerLaboratorios,nuevoLaboratorio, eliminarLaboratorio,editarLaboratorio } from '../controllers/admin/gestionLaboratorios.js';
+import { obtenerProveedores, nuevoProveedor, eliminarProveedor, editarProveedor } from '../controllers/admin/gestionProveedores.js';
+import { obtenerLotes, obtenerLotesPorVencer, obtenerLotesVencidos, nuevoLote, eliminarLote, editarLote } from '../controllers/admin/gestionLotes.js';
 import upload from '../middlewares/multer.js';
 import authAdmin from '../middlewares/authAdmin.js';
 

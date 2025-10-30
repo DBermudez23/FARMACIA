@@ -19,22 +19,22 @@ const sideBarBotones = [
     {
         icono: panelPrincipal,
         texto: 'PANEL PRINCIPAL',
-        to: '/admin-panel-principal'
+        to: '/vendedor-panel-principal'
     },
     {
         icono: miPerfil,
         texto: 'MI PERFIL',
-        to: '/admin-editar-perfil'
+        to: '/vendedor-editar-perfil'
     },
     {
         icono: contraseña,
         texto: 'CONTRASEÑA',
-        to: '/admin-editar-contraseña'
+        to: '/vendedor-editar-contraseña'
     },
     {
         icono: ventas,
         texto: 'VENTAS',
-        to: '/admin-panel-ventas'
+        to: '/vendedor-panel-ventas'
     }
 ];
 
