@@ -1,0 +1,15 @@
+export const MainTheme = {
+  primary: "#15D0EF",
+  background: "#FFFFFF",
+  formBackground: "#E2E1E1",
+  labsBackgorund: "#5D94B9",
+  presBackground: "#FEBA5A",
+  redRow: "#E84141",
+  yellowRow: "#EBDE77",
+  textTitle: "#000000",
+  textAmount: "#218326",
+  textSoft: "#767676",
+  border: "#15D0EF",
+  white: "#FFFFFF",
+  shadow: "#000000",
+};

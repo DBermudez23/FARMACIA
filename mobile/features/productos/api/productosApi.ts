@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../../../app/store";
 
-const backendURL = process.env.VITE_BACKEND_URL;
+const backendURL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 const baseQuery = fetchBaseQuery({
     baseUrl: `${backendURL}/api/admin`,
